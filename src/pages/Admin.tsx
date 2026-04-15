@@ -386,6 +386,7 @@ const Admin = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="orders">Заявки</TabsTrigger>
+            <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -394,6 +395,10 @@ const Admin = () => {
 
           <TabsContent value="orders">
             <OrdersTab />
+          </TabsContent>
+
+          <TabsContent value="settings">
+            <SettingsTab />
           </TabsContent>
         </Tabs>
       </main>
