@@ -329,7 +329,7 @@ const SettingsTab = () => {
                 <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
               </label>
               <Button variant="ghost" size="sm" className="gap-1.5 text-destructive" onClick={removeHeroImage}>
-                <TrashIcon size={14} /> Удалить
+                <Trash2 size={14} /> Удалить
               </Button>
             </div>
           </div>
