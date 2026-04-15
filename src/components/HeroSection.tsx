@@ -69,10 +69,10 @@ const HeroSection = () => {
                 cascade ionic
               </p>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-foreground">
-                Аренда оборудования для&nbsp;мойки фасадов по&nbsp;всей&nbsp;России
+                Аренда WFP оборудования для&nbsp;мойки фасадов и&nbsp;остекления
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
-                WFP-технология: моем окна и&nbsp;фасады с&nbsp;земли до&nbsp;20&nbsp;метров. Без&nbsp;люлек, без&nbsp;альпинистов, без&nbsp;рисков.
+                Подберём комплект под ваш объект, чтобы вы могли начать работу без&nbsp;покупки дорогого оборудования на&nbsp;старте.
               </p>
             </div>
 
