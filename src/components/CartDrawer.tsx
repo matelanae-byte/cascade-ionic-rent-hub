@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart, Plus, Minus, Trash2 } from "lucide-react";
@@ -14,9 +15,10 @@ const formatPrice = (n: number) =>
 
 const CartDrawer = () => {
   const { items, removeItem, updateQuantity, updatePeriod, totalItems, totalPrice, clearCart } = useCart();
+  const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button className="relative p-2 text-foreground hover:text-primary transition-colors" aria-label="Корзина">
           <ShoppingCart size={22} />
@@ -104,8 +106,16 @@ const CartDrawer = () => {
                 <Button variant="outline" size="sm" onClick={clearCart} className="text-xs">
                   Очистить
                 </Button>
-                <Button asChild className="flex-1 font-semibold">
-                  <a href="#hero-form">Оформить заявку</a>
+                <Button
+                  className="flex-1 font-semibold"
+                  onClick={() => {
+                    setOpen(false);
+                    setTimeout(() => {
+                      document.getElementById("hero-form")?.scrollIntoView({ behavior: "smooth" });
+                    }, 300);
+                  }}
+                >
+                  Оформить заявку
                 </Button>
               </div>
             </div>
