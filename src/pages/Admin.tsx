@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package, LogOut } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package, LogOut, Upload, ImageIcon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useProducts, iconMap, type Product } from "@/contexts/ProductsContext";
 import { useOrders, type Order } from "@/contexts/OrdersContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 const periodLabels: Record<string, string> = { day: "День", week: "Неделя", month: "Месяц" };
 
