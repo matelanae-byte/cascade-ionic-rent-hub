@@ -106,8 +106,16 @@ const CartDrawer = () => {
                 <Button variant="outline" size="sm" onClick={clearCart} className="text-xs">
                   Очистить
                 </Button>
-                <Button asChild className="flex-1 font-semibold">
-                  <a href="#hero-form">Оформить заявку</a>
+                <Button
+                  className="flex-1 font-semibold"
+                  onClick={() => {
+                    setOpen(false);
+                    setTimeout(() => {
+                      document.getElementById("hero-form")?.scrollIntoView({ behavior: "smooth" });
+                    }, 300);
+                  }}
+                >
+                  Оформить заявку
                 </Button>
               </div>
             </div>
