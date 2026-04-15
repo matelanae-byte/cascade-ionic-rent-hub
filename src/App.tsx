@@ -23,6 +23,7 @@ const App = () => (
           
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/offer" element={<Offer />} />
+          <Route path="/rental-includes" element={<RentalIncludes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
