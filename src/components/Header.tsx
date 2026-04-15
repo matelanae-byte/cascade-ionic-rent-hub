@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import logo from "@/assets/logo.jpg";
+import CartDrawer from "@/components/CartDrawer";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,21 +22,27 @@ const Header = () => {
           <a href="#contacts" className="hover:text-primary transition-colors">Контакты</a>
         </nav>
 
-        <a
-          href="#hero-form"
-          className="hidden md:inline-flex h-10 px-6 items-center rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
-        >
-          Оставить заявку
-        </a>
+        <div className="hidden md:flex items-center gap-3">
+          <CartDrawer />
+          <a
+            href="#hero-form"
+            className="inline-flex h-10 px-6 items-center rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors"
+          >
+            Оставить заявку
+          </a>
+        </div>
 
         {/* Mobile toggle */}
-        <button
-          className="md:hidden p-2 text-foreground"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Меню"
-        >
-          {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          <CartDrawer />
+          <button
+            className="p-2 text-foreground"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Меню"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
