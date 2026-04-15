@@ -18,7 +18,7 @@ const CartDrawer = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button className="relative p-2 text-foreground hover:text-primary transition-colors" aria-label="Корзина">
           <ShoppingCart size={22} />
