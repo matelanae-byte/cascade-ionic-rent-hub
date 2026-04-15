@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { ProductsProvider } from "@/contexts/ProductsContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { AuthProvider } from "@/hooks/useAuth";
+import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import Index from "./pages/Index";
 import Privacy from "./pages/Privacy";
 import Offer from "./pages/Offer";
@@ -17,31 +18,32 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <ProductsProvider>
-        <OrdersProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/offer" element={<Offer />} />
-                  <Route path="/rental-includes" element={<RentalIncludes />} />
-                  <Route path="/admin/login" element={<AdminLogin />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </CartProvider>
-        </OrdersProvider>
-      </ProductsProvider>
+      <SiteSettingsProvider>
+        <ProductsProvider>
+          <OrdersProvider>
+            <CartProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/offer" element={<Offer />} />
+                    <Route path="/rental-includes" element={<RentalIncludes />} />
+                    <Route path="/admin/login" element={<AdminLogin />} />
+                    <Route path="/admin" element={<Admin />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </CartProvider>
+          </OrdersProvider>
+        </ProductsProvider>
+      </SiteSettingsProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

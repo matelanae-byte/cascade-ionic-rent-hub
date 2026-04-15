@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Ruler, CalendarDays, ShieldCheck, ShoppingCart } from "lucide-react";
 import { useCart, type RentalPeriod } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrdersContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 
 const badges = [
@@ -26,6 +27,7 @@ const HeroSection = () => {
   const [city, setCity] = useState("");
   const { items, totalPrice, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { heroImageUrl } = useSiteSettings();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,15 +138,22 @@ const HeroSection = () => {
             </form>
           </div>
 
-          {/* Right — image placeholder */}
+          {/* Right — hero image */}
           <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-full aspect-[4/5] max-w-md rounded-lg bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-8">
-              <div className="text-6xl mb-4">🏗️</div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Здесь будет фото оператора<br />с WFP-штангой у фасада
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-2">Загрузите изображение позже</p>
-            </div>
+            {heroImageUrl ? (
+              <img
+                src={heroImageUrl}
+                alt="WFP оборудование для мойки фасадов"
+                className="w-full max-w-md rounded-lg object-cover aspect-[4/5] shadow-md"
+              />
+            ) : (
+              <div className="relative w-full aspect-[4/5] max-w-md rounded-lg bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-8">
+                <div className="text-6xl mb-4">🏗️</div>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Загрузите фото в&nbsp;админке<br />Настройки → Hero-изображение
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
