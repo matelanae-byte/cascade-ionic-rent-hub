@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import type { RentalPeriod } from "./CartContext";
 
 export interface OrderItem {
@@ -22,8 +23,9 @@ export interface Order {
 
 interface OrdersContextType {
   orders: Order[];
-  addOrder: (order: Omit<Order, "id" | "createdAt" | "processed">) => void;
+  addOrder: (order: Omit<Order, "id" | "createdAt" | "processed">) => Promise<void>;
   toggleProcessed: (id: string) => void;
+  loading: boolean;
 }
 
 const OrdersContext = createContext<OrdersContextType | null>(null);
@@ -34,36 +36,62 @@ export const useOrders = () => {
   return ctx;
 };
 
-const STORAGE_KEY = "cascade_orders";
-
-const loadOrders = (): Order[] => {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return [];
-};
-
 export const OrdersProvider = ({ children }: { children: ReactNode }) => {
-  const [orders, setOrders] = useState<Order[]>(loadOrders);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    const { data } = await supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (data) {
+      setOrders(
+        data.map((r: any) => ({
+          id: r.id,
+          name: r.name,
+          phone: r.phone,
+          city: r.city,
+          items: (r.items ?? []) as OrderItem[],
+          total: Number(r.total),
+          createdAt: r.created_at,
+          processed: r.processed,
+        }))
+      );
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const addOrder = useCallback(async (order: Omit<Order, "id" | "createdAt" | "processed">) => {
+    await supabase.from("orders").insert({
+      name: order.name,
+      phone: order.phone,
+      city: order.city,
+      items: order.items as any,
+      total: order.total,
+    });
+    // Re-fetch only if admin is viewing (select will return empty for anon due to RLS)
+    fetchOrders();
+  }, [fetchOrders]);
+
+  const toggleProcessed = useCallback(async (id: string) => {
+    const order = orders.find((o) => o.id === id);
+    if (!order) return;
+    await supabase
+      .from("orders")
+      .update({ processed: !order.processed })
+      .eq("id", id);
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, processed: !o.processed } : o)));
   }, [orders]);
 
-  const addOrder = useCallback((order: Omit<Order, "id" | "createdAt" | "processed">) => {
-    setOrders((prev) => [
-      { ...order, id: `order-${Date.now()}`, createdAt: new Date().toISOString(), processed: false },
-      ...prev,
-    ]);
-  }, []);
-
-  const toggleProcessed = useCallback((id: string) => {
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, processed: !o.processed } : o)));
-  }, []);
-
   return (
-    <OrdersContext.Provider value={{ orders, addOrder, toggleProcessed }}>
+    <OrdersContext.Provider value={{ orders, addOrder, toggleProcessed, loading }}>
       {children}
     </OrdersContext.Provider>
   );

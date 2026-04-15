@@ -29,7 +29,7 @@ const HeroSection = () => {
   const { addOrder } = useOrders();
   const { heroImageUrl } = useSiteSettings();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const orderItems = items.map((item) => ({
@@ -40,7 +40,7 @@ const HeroSection = () => {
       price: item.prices[item.period] * item.quantity,
     }));
 
-    addOrder({
+    await addOrder({
       name,
       phone,
       city,
