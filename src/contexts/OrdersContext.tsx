@@ -69,14 +69,16 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchOrders]);
 
   const addOrder = useCallback(async (order: Omit<Order, "id" | "createdAt" | "processed">) => {
-    await supabase.from("orders").insert({
+    const { error } = await supabase.from("orders").insert({
       name: order.name,
       phone: order.phone,
       city: order.city,
       items: order.items as any,
       total: order.total,
     });
-    // Re-fetch only if admin is viewing (select will return empty for anon due to RLS)
+    if (error) {
+      console.error("Failed to insert order:", error);
+    }
     fetchOrders();
   }, [fetchOrders]);
 
