@@ -1,73 +1,44 @@
 
 
-# План реализации сайта cascade ionic
+## Plan: Generate products with photos for all categories
 
-## Обзор
+### Current state
+- Products stored in localStorage via `ProductsContext`
+- 4 categories: Комплекты, Штанги, Системы подачи воды, Доп. оборудование
+- 6 products total, no photos
+- Images stored as base64 strings (problematic for localStorage size limits)
 
-Создание полноценной визуальной и структурной основы сайта аренды оборудования cascade ionic. Строгий индустриальный стиль, светлый фон, тёмные блоки, акцент — глубокий бирюзовый (#0D7377 / teal-800).
+### What will be done
 
-## Дизайн-система
+**1. Create a storage bucket for product images**
+- SQL migration to create a public `product-images` bucket
+- RLS policy allowing public read access
 
-- **Фон**: светло-серый (#F7F8FA)
-- **Текст**: почти чёрный (#1A1A2E)
-- **Акцент (primary)**: глубокий бирюзовый (#0D7377)
-- **Карточки**: белый фон с тонкой границей
-- **Заголовки**: Inter 700, uppercase где уместно
-- **Текст**: Inter 400
-- **Логотип**: загрузить из user-uploads в src/assets, использовать как img
+**2. Generate product images using AI**
+- Edge function that calls Lovable AI (gemini-2.5-flash-image) to generate realistic product photos for each item
+- Upload generated images to the storage bucket
+- Return public URLs
 
-## Структура файлов
+**3. Expand the product catalog to ~12-15 items**
+Add 2-3 products per category:
 
-```text
-src/
-├── assets/
-│   └── logo.jpg              ← логотип cascade ionic
-├── components/
-│   ├── Header.tsx             ← хедер с лого + навигация
-│   ├── Footer.tsx             ← футер с контактами и ссылками
-│   ├── HeroSection.tsx        ← первый экран: оффер + форма + плашки
-│   ├── ForWhomSection.tsx     ← «Для кого подходит»
-│   ├── CatalogSection.tsx     ← каталог с карточками (6 товаров)
-│   ├── HowItWorksSection.tsx  ← «Как это работает по России»
-│   ├── QuickSelectSection.tsx ← «Быстрый подбор»
-│   └── FAQSection.tsx         ← FAQ аккордеон
-├── pages/
-│   ├── Index.tsx              ← главная (все секции)
-│   ├── Delivery.tsx           ← «Доставка по РФ»
-│   ├── Privacy.tsx            ← «Политика конфиденциальности»
-│   └── Offer.tsx              ← «Публичная оферта»
-```
+- **Комплекты**: Kit 15m (existing), Kit 20m, Kit 10m starter
+- **Штанги**: 12m carbon (existing), 15m carbon (existing), 18m carbon, 8m fiberglass
+- **Системы подачи воды**: Water station (existing), compact water station, mobile filtration
+- **Доп. оборудование**: Chem pump (existing), hose reel (existing), brush set, trolley cart, safety harness
 
-## Детали реализации
+**4. Update `ProductsContext.tsx`**
+- Expand `defaultProducts` array with new items, each with a public image URL from the storage bucket
+- Add new icon mappings as needed
 
-### 1. Дизайн-токены
-Обновить `src/index.css` — заменить CSS-переменные на бирюзово-индустриальную палитру. Добавить шрифт Inter через Google Fonts в `index.html`.
+### Technical details
+- Images generated as ~600x400 product photos on white/neutral background
+- Stored in `product-images` bucket with public URLs
+- Edge function is temporary (used once to generate, then deleted)
+- localStorage will be cleared/reset so new defaults load
 
-### 2. Header
-Логотип слева, навигация (Каталог, Доставка, Контакты), кнопка «Оставить заявку». Тёмный или белый фон, строгий стиль.
-
-### 3. Hero (первый экран)
-- Левая часть: заголовок «Аренда профессионального оборудования для мойки фасадов», подзаголовок, форма (имя + телефон + город), кнопка
-- Правая часть: placeholder-изображение оператора со штангой (серый блок с описанием, т.к. фото нет)
-- Плашки: «До 20 м с земли», «Аренда от 1 дня», «Тест перед покупкой»
-
-### 4. Каталог
-6 карточек по предоставленным данным, группировка по категориям (Комплекты, Штанги, Системы подачи воды, Доп. оборудование). Каждая карточка: название, описание, цены день/неделя/месяц, кнопка «Подробнее».
-
-### 5. Остальные секции
-- **Для кого**: 4-5 карточек (клининговые компании, управляющие компании, строительные фирмы, частные мастера)
-- **Как это работает**: 4 шага (заявка → подбор → доставка → работа)
-- **Быстрый подбор**: мини-форма (тип задачи, высота, город)
-- **FAQ**: 5-6 вопросов в аккордеоне
-
-### 6. Страницы
-Delivery, Privacy, Offer — текстовые страницы с общим Layout (Header + Footer). Маршруты в App.tsx.
-
-### 7. Роутинг
-Добавить в App.tsx: `/delivery`, `/privacy`, `/offer`.
-
-## Что НЕ входит
-- Бэкенд, отправка форм, админка
-- Реальные фото (используем placeholder-блоки)
-- Сложная логика каталога
+### Files to create/edit
+- **Migration**: Create `product-images` storage bucket
+- **Edge function**: `generate-product-images` (temporary)
+- **`src/contexts/ProductsContext.tsx`**: Expanded product list with image URLs
 
