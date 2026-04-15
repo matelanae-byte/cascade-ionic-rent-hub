@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Ruler, CalendarDays, ShieldCheck } from "lucide-react";
+import { ArrowRight, Ruler, CalendarDays, ShieldCheck, ShoppingCart } from "lucide-react";
+import { useCart, type RentalPeriod } from "@/contexts/CartContext";
+import { useOrders } from "@/contexts/OrdersContext";
+import { toast } from "sonner";
 
 const badges = [
   { icon: Ruler, text: "До 20 м с земли" },
@@ -9,15 +12,50 @@ const badges = [
   { icon: ShieldCheck, text: "Тест перед покупкой" },
 ];
 
+const periodLabels: Record<RentalPeriod, string> = {
+  day: "день",
+  week: "неделя",
+  month: "месяц",
+};
+
+const formatPrice = (n: number) => n.toLocaleString("ru-RU") + " ₽";
+
 const HeroSection = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
+  const { items, totalPrice, clearCart } = useCart();
+  const { addOrder } = useOrders();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: интеграция с бэкендом
-    alert(`Заявка отправлена: ${name}, ${phone}, ${city}`);
+
+    const orderItems = items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      quantity: item.quantity,
+      period: item.period,
+      price: item.prices[item.period] * item.quantity,
+    }));
+
+    addOrder({
+      name,
+      phone,
+      city,
+      items: orderItems,
+      total: totalPrice,
+    });
+
+    toast.success("Заявка отправлена!", {
+      description: items.length > 0
+        ? `${items.length} позиц. на сумму ${formatPrice(totalPrice)}`
+        : "Мы свяжемся с вами в ближайшее время",
+    });
+
+    clearCart();
+    setName("");
+    setPhone("");
+    setCity("");
   };
 
   return (
@@ -58,11 +96,38 @@ const HeroSection = () => {
               className="rounded-lg border bg-card p-6 shadow-sm space-y-4 max-w-md"
             >
               <p className="text-sm font-semibold text-foreground">Получите расчёт аренды за 15 минут</p>
+
+              {/* Cart summary */}
+              {items.length > 0 && (
+                <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <ShoppingCart size={16} className="text-primary" />
+                    Товары в заявке
+                  </div>
+                  <ul className="space-y-1">
+                    {items.map((item) => (
+                      <li key={item.id} className="flex justify-between text-xs text-muted-foreground">
+                        <span className="truncate mr-2">
+                          {item.name} × {item.quantity} ({periodLabels[item.period]})
+                        </span>
+                        <span className="shrink-0 font-medium text-foreground">
+                          {formatPrice(item.prices[item.period] * item.quantity)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="flex justify-between text-xs font-bold text-foreground border-t border-primary/10 pt-1.5">
+                    <span>Итого</span>
+                    <span>{formatPrice(totalPrice)}</span>
+                  </div>
+                </div>
+              )}
+
               <Input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} required />
               <Input placeholder="Телефон" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               <Input placeholder="Город" value={city} onChange={(e) => setCity(e.target.value)} required />
               <Button type="submit" className="w-full gap-2 font-semibold">
-                Отправить заявку <ArrowRight size={16} />
+                {items.length > 0 ? "Оформить заявку" : "Отправить заявку"} <ArrowRight size={16} />
               </Button>
               <p className="text-xs text-muted-foreground">
                 Нажимая кнопку, вы соглашаетесь с{" "}
