@@ -8,33 +8,56 @@ interface SiteSettings {
 interface SiteSettingsContextType extends SiteSettings {
   uploadHeroImage: (file: File) => Promise<string>;
   removeHeroImage: () => void;
+  loading: boolean;
 }
 
-const SETTINGS_KEY = "site-settings";
 const HERO_IMAGE_PATH = "site/hero-image";
+const SETTINGS_KEY_HERO = "hero_image_url";
 
 const SiteSettingsContext = createContext<SiteSettingsContextType | null>(null);
 
-const loadSettings = (): SiteSettings => {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return { heroImageUrl: null };
+const upsertSetting = async (key: string, value: string | null) => {
+  if (value) {
+    const { data } = await supabase
+      .from("site_settings")
+      .select("id")
+      .eq("key", key)
+      .maybeSingle();
+
+    if (data) {
+      await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() }).eq("key", key);
+    } else {
+      await supabase.from("site_settings").insert({ key, value });
+    }
+  } else {
+    await supabase.from("site_settings").delete().eq("key", key);
+  }
 };
 
 export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<SiteSettings>(loadSettings);
+  const [settings, setSettings] = useState<SiteSettings>({ heroImageUrl: null });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  }, [settings]);
+    const load = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("key, value")
+        .eq("key", SETTINGS_KEY_HERO)
+        .maybeSingle();
+
+      if (data?.value) {
+        setSettings({ heroImageUrl: data.value });
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
 
   const uploadHeroImage = async (file: File): Promise<string> => {
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${HERO_IMAGE_PATH}.${ext}`;
 
-    // Remove old file (ignore errors)
     await supabase.storage.from("product-images").remove([path]);
 
     const { error } = await supabase.storage
@@ -44,18 +67,20 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     if (error) throw error;
 
     const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-    const url = data.publicUrl + "?t=" + Date.now(); // cache bust
+    const url = data.publicUrl + "?t=" + Date.now();
 
+    await upsertSetting(SETTINGS_KEY_HERO, url);
     setSettings((prev) => ({ ...prev, heroImageUrl: url }));
     return url;
   };
 
   const removeHeroImage = () => {
+    upsertSetting(SETTINGS_KEY_HERO, null);
     setSettings((prev) => ({ ...prev, heroImageUrl: null }));
   };
 
   return (
-    <SiteSettingsContext.Provider value={{ ...settings, uploadHeroImage, removeHeroImage }}>
+    <SiteSettingsContext.Provider value={{ ...settings, uploadHeroImage, removeHeroImage, loading }}>
       {children}
     </SiteSettingsContext.Provider>
   );
