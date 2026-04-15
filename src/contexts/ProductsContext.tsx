@@ -202,11 +202,19 @@ export const useProducts = () => {
 };
 
 const STORAGE_KEY = "cascade_products";
+const CATALOG_VERSION = "v2"; // bump to reset localStorage when defaults change
+const VERSION_KEY = "cascade_products_version";
 
 const loadProducts = (): Product[] => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    const storedVersion = localStorage.getItem(VERSION_KEY);
+    if (storedVersion === CATALOG_VERSION) {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(VERSION_KEY, CATALOG_VERSION);
+    }
   } catch {}
   return defaultProducts;
 };
