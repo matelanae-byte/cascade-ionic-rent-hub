@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 
 import Privacy from "./pages/Privacy";
 import Offer from "./pages/Offer";
+import RentalIncludes from "./pages/RentalIncludes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
           
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/offer" element={<Offer />} />
+          <Route path="/rental-includes" element={<RentalIncludes />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
