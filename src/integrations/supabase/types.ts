@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      orders: {
+        Row: {
+          city: string
+          created_at: string
+          id: string
+          items: Json
+          name: string
+          phone: string
+          processed: boolean
+          total: number
+        }
+        Insert: {
+          city: string
+          created_at?: string
+          id?: string
+          items?: Json
+          name: string
+          phone: string
+          processed?: boolean
+          total?: number
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          id?: string
+          items?: Json
+          name?: string
+          phone?: string
+          processed?: boolean
+          total?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
