@@ -14,7 +14,9 @@ const Index = () => {
       <Header />
       <main className="flex-1">
         <HeroSection />
+        <AboutSection />
         <ForWhomSection />
+        <WhyUsSection />
         <CatalogSection />
         <RentalIncludesSection />
         <QuickSelectSection />
