@@ -8,7 +8,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4">
-            <img src={logo} alt="cascade ionic" className="h-10 w-auto brightness-0 invert" />
+            <img src={logo} alt="cascade ionic" className="h-10 w-auto" />
             <p className="text-sm text-background/60 leading-relaxed">
               Аренда профессионального оборудования для мойки фасадов и&nbsp;окон по&nbsp;всей России.
             </p>
