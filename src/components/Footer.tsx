@@ -19,7 +19,7 @@ const Footer = () => {
             <h4 className="text-xs font-semibold uppercase tracking-widest text-background/40">Навигация</h4>
             <nav className="flex flex-col gap-2 text-sm text-background/70">
               <a href="#catalog" className="hover:text-background transition-colors">Каталог</a>
-              <Link to="/delivery" className="hover:text-background transition-colors">Доставка по РФ</Link>
+              
               <a href="#how-it-works" className="hover:text-background transition-colors">Как это работает</a>
               <a href="#faq" className="hover:text-background transition-colors">FAQ</a>
             </nav>

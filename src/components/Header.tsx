@@ -16,7 +16,7 @@ const Header = () => {
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-foreground/80">
           <a href="#catalog" className="hover:text-primary transition-colors">Каталог</a>
-          <Link to="/delivery" className="hover:text-primary transition-colors">Доставка</Link>
+          
           <a href="#faq" className="hover:text-primary transition-colors">FAQ</a>
           <a href="#contacts" className="hover:text-primary transition-colors">Контакты</a>
         </nav>
@@ -42,7 +42,7 @@ const Header = () => {
       {menuOpen && (
         <div className="md:hidden border-t bg-card px-6 py-4 space-y-3 text-sm font-medium">
           <a href="#catalog" className="block hover:text-primary" onClick={() => setMenuOpen(false)}>Каталог</a>
-          <Link to="/delivery" className="block hover:text-primary" onClick={() => setMenuOpen(false)}>Доставка</Link>
+          
           <a href="#faq" className="block hover:text-primary" onClick={() => setMenuOpen(false)}>FAQ</a>
           <a href="#contacts" className="block hover:text-primary" onClick={() => setMenuOpen(false)}>Контакты</a>
           <a
