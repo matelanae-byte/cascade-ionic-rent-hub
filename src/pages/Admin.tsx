@@ -287,6 +287,62 @@ const OrdersTab = () => {
   );
 };
 
+/* ─── Settings Tab ─── */
+const SettingsTab = () => {
+  const { heroImageUrl, uploadHeroImage, removeHeroImage } = useSiteSettings();
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      await uploadHeroImage(file);
+      toast.success("Hero-изображение обновлено");
+    } catch (err: any) {
+      toast.error("Ошибка загрузки: " + (err.message || "Попробуйте снова"));
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 max-w-lg">
+      <div className="rounded-lg border bg-card p-5 space-y-4">
+        <h3 className="font-semibold text-foreground flex items-center gap-2">
+          <ImageIcon size={18} /> Hero-изображение
+        </h3>
+        <p className="text-sm text-muted-foreground">
+          Это фото отображается в главном блоке на первом экране сайта.
+        </p>
+
+        {heroImageUrl ? (
+          <div className="space-y-3">
+            <img src={heroImageUrl} alt="Hero" className="w-full max-w-xs rounded-lg border object-cover aspect-[4/5]" />
+            <div className="flex gap-2">
+              <label className="cursor-pointer">
+                <Button variant="outline" size="sm" className="gap-1.5 pointer-events-none" asChild>
+                  <span><Upload size={14} /> Заменить</span>
+                </Button>
+                <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
+              </label>
+              <Button variant="ghost" size="sm" className="gap-1.5 text-destructive" onClick={removeHeroImage}>
+                <TrashIcon size={14} /> Удалить
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-border p-8 cursor-pointer hover:bg-muted/50 transition-colors">
+            <Upload size={32} className="text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">{uploading ? "Загрузка…" : "Нажмите, чтобы загрузить фото"}</span>
+            <input type="file" accept="image/*" onChange={handleUpload} className="hidden" disabled={uploading} />
+          </label>
+        )}
+      </div>
+    </div>
+  );
+};
+
 /* ─── Admin Page ─── */
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Ruler, CalendarDays, ShieldCheck, ShoppingCart } from "lucide-react";
 import { useCart, type RentalPeriod } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrdersContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 
 const badges = [
@@ -26,6 +27,7 @@ const HeroSection = () => {
   const [city, setCity] = useState("");
   const { items, totalPrice, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { heroImageUrl } = useSiteSettings();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
