@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package } from "lucide-react";
+import { Link, Navigate } from "react-router-dom";
+import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -288,6 +289,26 @@ const OrdersTab = () => {
 
 /* ─── Admin Page ─── */
 const Admin = () => {
+  const { user, isAdmin, loading, signOut } = useAuth();
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Загрузка…</div>;
+  }
+
+  if (!user) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-center px-4">
+        <p className="text-lg font-semibold text-foreground">Доступ запрещён</p>
+        <p className="text-sm text-muted-foreground">У вас нет прав администратора</p>
+        <Button variant="outline" onClick={signOut} className="gap-2"><LogOut size={16} /> Выйти</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card/95 backdrop-blur">
@@ -295,7 +316,10 @@ const Admin = () => {
           <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft size={20} />
           </Link>
-          <h1 className="text-lg font-semibold text-foreground">Управление товарами и заявками</h1>
+          <h1 className="text-lg font-semibold text-foreground flex-1">Управление товарами и заявками</h1>
+          <Button variant="ghost" size="sm" onClick={signOut} className="gap-1.5 text-muted-foreground">
+            <LogOut size={16} /> Выйти
+          </Button>
         </div>
       </header>
 
