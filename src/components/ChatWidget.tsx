@@ -79,9 +79,15 @@ export const ChatWidget = () => {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "chat_messages", filter: `ticket_id=eq.${ticket.id}` },
         (payload) => {
+          const incoming = payload.new as ChatMessage;
           setMessages((prev) => {
-            if (prev.some((m) => m.id === (payload.new as ChatMessage).id)) return prev;
-            return [...prev, payload.new as ChatMessage];
+            // Already have this exact message
+            if (prev.some((m) => m.id === incoming.id)) return prev;
+            // Replace optimistic temp message with same role+content
+            const withoutOptimistic = prev.filter(
+              (m) => !(m.id.startsWith("tmp-") && m.role === incoming.role && m.content === incoming.content)
+            );
+            return [...withoutOptimistic, incoming];
           });
         }
       )
