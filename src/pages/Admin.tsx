@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
 import { HeroTextsTab } from "@/components/admin/HeroTextsTab";
+import { SectionsContentTab } from "@/components/admin/SectionsContentTab";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
