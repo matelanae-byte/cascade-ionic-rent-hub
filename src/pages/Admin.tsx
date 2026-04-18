@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package, LogOut, Upload, ImageIcon } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Eye, EyeOff, ChevronUp, ChevronDown, Check, X, Package, LogOut, Upload, ImageIcon, MessageCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { ChatsTab } from "@/components/admin/ChatsTab";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const periodLabels: Record<string, string> = { day: "День", week: "Неделя", month: "Месяц" };
@@ -213,21 +215,44 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => (
 /* ─── Dashboard Tab ─── */
 const DashboardTab = () => {
   const { orders } = useOrders();
+  const [chatCounts, setChatCounts] = useState({ active: 0, waiting: 0 });
+
+  useEffect(() => {
+    const load = async () => {
+      const { data } = await supabase.from("chat_tickets").select("status");
+      const rows = data ?? [];
+      setChatCounts({
+        active: rows.filter((r) => r.status === "ai" || r.status === "operator").length,
+        waiting: rows.filter((r) => r.status === "waiting_operator").length,
+      });
+    };
+    load();
+    const ch = supabase
+      .channel("dashboard-chats")
+      .on("postgres_changes", { event: "*", schema: "public", table: "chat_tickets" }, load)
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, []);
+
   const counts: Record<OrderStatus, number> = {
     new: orders.filter((o) => o.status === "new").length,
     in_progress: orders.filter((o) => o.status === "in_progress").length,
     delivered: orders.filter((o) => o.status === "delivered").length,
     cancelled: orders.filter((o) => o.status === "cancelled").length,
   };
-  const tiles: { key: OrderStatus | "total"; label: string; value: number; cls: string }[] = [
+  const tiles: { key: string; label: string; value: number; cls: string }[] = [
     { key: "total", label: "Всего заявок", value: orders.length, cls: "bg-card border-border" },
     { key: "new", label: "Новые", value: counts.new, cls: "bg-primary/10 border-primary/30" },
     { key: "in_progress", label: "В работе", value: counts.in_progress, cls: "bg-secondary border-border" },
     { key: "delivered", label: "Доставлены", value: counts.delivered, cls: "bg-emerald-500/10 border-emerald-500/30" },
     { key: "cancelled", label: "Отменены", value: counts.cancelled, cls: "bg-destructive/10 border-destructive/30" },
+    { key: "chats_active", label: "Активные чаты", value: chatCounts.active, cls: "bg-primary/10 border-primary/30" },
+    { key: "chats_waiting", label: "Ждут оператора", value: chatCounts.waiting, cls: "bg-amber-500/10 border-amber-500/30" },
   ];
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
       {tiles.map((t) => (
         <div key={t.key} className={`rounded-lg border p-5 ${t.cls}`}>
           <p className="text-xs uppercase tracking-wide text-muted-foreground">{t.label}</p>
@@ -437,6 +462,7 @@ const Admin = () => {
             <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="orders">Заявки</TabsTrigger>
+            <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -450,6 +476,10 @@ const Admin = () => {
 
           <TabsContent value="orders">
             <OrdersTab />
+          </TabsContent>
+
+          <TabsContent value="chats">
+            <ChatsTab />
           </TabsContent>
 
           <TabsContent value="settings">
