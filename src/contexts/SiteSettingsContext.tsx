@@ -192,6 +192,11 @@ export const DEFAULT_FOOTER_TEXTS: FooterTexts = {
   email: "info@cascadeionic.ru",
   address: "Москва, Россия",
   copyright: "Cascade ionic. Все права защищены.",
+  socials: {
+    vk: "https://vk.com/",
+    telegram: "https://t.me/",
+    max: "https://max.ru/",
+  },
 };
 
 interface SiteSettings {
