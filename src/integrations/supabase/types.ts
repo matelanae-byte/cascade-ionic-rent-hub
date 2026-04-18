@@ -23,6 +23,7 @@ export type Database = {
           name: string
           phone: string
           processed: boolean
+          status: string
           total: number
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           name: string
           phone: string
           processed?: boolean
+          status?: string
           total?: number
         }
         Update: {
@@ -43,6 +45,7 @@ export type Database = {
           name?: string
           phone?: string
           processed?: boolean
+          status?: string
           total?: number
         }
         Relationships: []
