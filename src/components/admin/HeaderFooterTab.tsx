@@ -217,6 +217,39 @@ const FooterEditor = () => {
         <LinksEditor links={draft.navLinks} onChange={(navLinks) => set("navLinks", navLinks)} />
       </div>
 
+      <div className="space-y-3 rounded-md border border-dashed p-4">
+        <div className="space-y-1">
+          <h4 className="text-sm font-semibold">Ссылки на соцсети</h4>
+          <p className="text-xs text-muted-foreground">Оставьте поле пустым, чтобы скрыть иконку.</p>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium">ВКонтакте</label>
+            <Input
+              placeholder="https://vk.com/..."
+              value={draft.socials?.vk ?? ""}
+              onChange={(e) => set("socials", { ...draft.socials, vk: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium">Telegram</label>
+            <Input
+              placeholder="https://t.me/..."
+              value={draft.socials?.telegram ?? ""}
+              onChange={(e) => set("socials", { ...draft.socials, telegram: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium">MAX</label>
+            <Input
+              placeholder="https://max.ru/..."
+              value={draft.socials?.max ?? ""}
+              onChange={(e) => set("socials", { ...draft.socials, max: e.target.value })}
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="flex gap-2 pt-2 border-t">
         <Button onClick={save} disabled={!dirty || saving} className="gap-1.5">
           <Check size={16} /> {saving ? "Сохранение…" : "Сохранить"}
