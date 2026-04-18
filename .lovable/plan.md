@@ -1,49 +1,83 @@
 
 
-## Plan: Statuses for orders + Dashboard counters
+## План: ИИ-чат с подбором товаров + операторская поддержка
 
-### 1. Order statuses (4 values)
-Replace the boolean `processed` semantics with an explicit status field with 4 values:
-- `new` — Новая
-- `in_progress` — В работе
-- `delivered` — Доставлена
-- `cancelled` — Отменена
+### Что строим
+Плавающая кнопка чата справа внизу → форма (имя, телефон, согласие с политикой) → диалог с ИИ-консультантом, который знает только наш каталог и подбирает оборудование. Кнопка «Позвать оператора» переключает тикет в режим живого общения. Все диалоги (даже без заявки) сохраняются в админке как тикеты с полной историей и возможностью отвечать.
 
-**Database migration:**
-- Add `status text not null default 'new'` column to `public.orders`.
-- Add CHECK-style validation via trigger (per project rules — no immutable CHECK needed here, plain CHECK on enum-like text is fine since it's immutable; will use a simple `CHECK (status IN (...))`).
-- Backfill: existing rows with `processed = true` → `status = 'delivered'`, else `status = 'new'`.
-- Keep `processed` column for now (no breaking change), but stop using it in UI.
+---
 
-**Code:**
-- `src/contexts/OrdersContext.tsx`: add `status` to `Order` interface, map from row, add `updateStatus(id, status)` method. Keep `toggleProcessed` for backward-compat or remove.
-- `src/pages/Admin.tsx` (`OrdersTab`):
-  - In the list, replace the "Новая/Обработана" badge with a colored badge showing the current status (4 colors).
-  - In the order details Dialog, replace the single toggle button with a status selector (4 buttons or a Select) that calls `updateStatus`.
+### 1. База данных (новые таблицы)
 
-### 2. Dashboard tab with counters
-Add a new **"Дашборд"** tab (first tab, default) to `Admin.tsx`:
-- 4 stat cards showing counts of orders by status (Новая / В работе / Доставлена / Отменена).
-- Plus a small "Всего заявок" card.
-- Computed from `orders` array in `OrdersContext`.
+**`chat_tickets`** — карточка обращения
+- `id`, `name`, `phone`, `created_at`, `updated_at`, `last_message_at`
+- `status` text: `ai` (ведёт ИИ), `waiting_operator` (ждёт оператора), `operator` (ведёт оператор), `closed`
+- `unread_admin` boolean — для бейджа «новое» в админке
+- `order_id` uuid nullable — если из чата оформлена заявка, ссылка на `orders.id`
 
-### 3. Products tab — verification
-Current `ProductsTab` already supports:
-- Add (`Добавить товар` button → `ProductForm` → `addProduct`)
-- Edit (pencil icon → inline `ProductForm` → `updateProduct`)
-- Delete, hide/show, reorder, image upload
+**`chat_messages`** — сообщения тикета
+- `id`, `ticket_id` (fk), `role` text (`user` / `assistant` / `operator` / `system`), `content` text, `created_at`
 
-This works correctly. No changes needed — will just confirm in the response. (Note: products are still stored in `localStorage` via `ProductsContext`, not the DB. That's a separate larger refactor — not requested here, won't touch it.)
+**RLS:**
+- `chat_tickets`: anyone может INSERT (создание), SELECT/UPDATE только владельцу тикета по `id` (через клиентский доступ по id из localStorage) **+** admin полный доступ. Для простоты и безопасности: публичный SELECT/UPDATE по конкретному `id` через edge-функцию (service role), без прямого RLS-доступа анонимам ко всей таблице. Анонам разрешим только INSERT.
+- `chat_messages`: аналогично — анонам INSERT только своих сообщений через edge-функцию; admin читает всё.
+- Realtime включён на обе таблицы для обновлений в админке и в чате (когда оператор отвечает).
 
-### Files to change
-- New migration: add `status` column + backfill
-- `src/contexts/OrdersContext.tsx` — add status field & `updateStatus`
-- `src/pages/Admin.tsx` — add Dashboard tab, status badge in list, status selector in dialog
-- `src/integrations/supabase/types.ts` — auto-regenerated
+### 2. Edge-функция `chat-ai`
+Единая функция для:
+- создания тикета (`action: "create_ticket"`) — валидирует имя/телефон, создаёт запись;
+- отправки сообщения пользователя (`action: "send_message"`) — сохраняет user-сообщение, если `status='ai'` — вызывает Lovable AI и сохраняет ответ; если `status='operator'` — просто сохраняет;
+- запроса оператора (`action: "request_operator"`) — переводит тикет в `waiting_operator`, добавляет system-сообщение;
+- оформления заявки из чата (`action: "create_order"`) — создаёт запись в `orders`, привязывает `order_id` к тикету.
 
-### Status color mapping
-- new → default (teal/primary)
-- in_progress → secondary (gray-blue)
-- delivered → outline green
-- cancelled → destructive (red)
+**Системный промпт ИИ** включает:
+- роль: консультант cascade ionic по аренде оборудования для мойки фасадов и остекления (WFP);
+- актуальный каталог товаров (подгружается из `products` где `hidden=false`) с названием, категорией, ценой день/неделя/месяц, описанием;
+- сценарий: задаёт 2 ключевых вопроса (тип задачи, высота объекта), затем предлагает 1–3 подходящих товара из каталога с ценами;
+- ограничение: не отвечает на вопросы вне темы аренды нашего оборудования;
+- по готовности — предлагает оформить заявку (триггерит UI-кнопку «Оформить»).
+
+Модель: `google/gemini-3-flash-preview` (быстро, дёшево, достаточно). Без стриминга на первом этапе — обычный invoke, проще и надёжнее.
+
+### 3. Frontend — виджет чата
+
+**`src/components/ChatWidget.tsx`** — монтируется в `App.tsx` глобально:
+- Плавающая круглая кнопка fixed bottom-right с иконкой `MessageCircle` (бренд-цвет `#0D7377`).
+- Открывает `Sheet` (или собственный popup ~380×560px) с тремя экранами:
+  1. **Форма входа** — имя, телефон (с маской), чекбокс согласия с `/privacy`. Валидация zod.
+  2. **Чат** — лента сообщений, поле ввода, кнопка «Позвать оператора» в шапке, кнопка «Оформить заявку» (появляется когда ИИ её предлагает или вручную).
+  3. После оформления — подтверждение «Заявка №… принята».
+- `ticket_id` сохраняется в `localStorage` → при повторном открытии возвращаемся в существующий чат.
+- Realtime-подписка на `chat_messages` по `ticket_id` — мгновенно показываем ответы оператора.
+- Сообщения рендерятся через `react-markdown` (ответы ИИ).
+
+### 4. Админка — новая вкладка «Чаты»
+
+**`src/pages/Admin.tsx`** — добавляем 5-ю вкладку «Чаты»:
+- Слева список тикетов (имя, телефон, последнее сообщение, статус-бейдж, индикатор «непрочитано»).
+- Справа открытый тикет: история переписки + поле ввода для ответа оператора.
+- Кнопка «Взять в работу» переводит `status` → `operator`, отключает ИИ для этого тикета.
+- Кнопка «Вернуть ИИ» / «Закрыть тикет».
+- Realtime-подписка — новые сообщения подсвечиваются без перезагрузки.
+
+**Дашборд:** добавляем счётчик «Активные чаты» и «Ждут оператора».
+
+### 5. Файлы
+
+**Новые:**
+- Миграция: `chat_tickets`, `chat_messages`, RLS, realtime
+- `supabase/functions/chat-ai/index.ts` + `supabase/config.toml` (verify_jwt=false)
+- `src/components/ChatWidget.tsx`
+- `src/components/admin/ChatsTab.tsx` (вынесем для чистоты)
+
+**Изменяем:**
+- `src/App.tsx` — монтируем `<ChatWidget />`
+- `src/pages/Admin.tsx` — добавляем вкладку «Чаты» + счётчики на дашборд
+- `package.json` — `react-markdown` (если ещё нет)
+
+### 6. Что важно
+- ИИ строго ограничен нашим каталогом из БД (передаётся в системный промпт при каждом запросе → всегда актуально).
+- Тикет сохраняется **сразу** после ввода имени/телефона, до первого сообщения — даже «брошенные» чаты видны в админке.
+- Обработка ошибок Lovable AI (429/402) → пользователю показываем «Сейчас высокая нагрузка, переключаю на оператора», статус → `waiting_operator`.
+- Дизайн строго в бренде: teal `#0D7377`, светлый фон, Inter, без неона/блобов.
 
