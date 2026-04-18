@@ -225,6 +225,15 @@ Deno.serve(async (req) => {
         role: "system",
         content: `Заявка №${order.id.slice(0, 8)} оформлена. С вами свяжется менеджер.`,
       });
+      notifyTelegram({
+        type: "order",
+        name: ticket.name,
+        phone: ticket.phone,
+        city: city || "—",
+        items,
+        total: Number(total) || 0,
+        orderId: order.id,
+      });
       return json({ ok: true, orderId: order.id });
     }
 
