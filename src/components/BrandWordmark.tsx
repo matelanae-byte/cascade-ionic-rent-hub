@@ -22,14 +22,10 @@ const BrandWordmark = ({ text, sizeClass = "text-xl sm:text-2xl md:text-3xl", cl
 
   return (
     <span
-      className={`inline-flex items-baseline whitespace-nowrap leading-none select-none ${sizeClass} ${className}`}
+      className={`inline-flex items-baseline whitespace-nowrap leading-none select-none font-extrabold tracking-tight ${sizeClass} ${className}`}
     >
-      <span className="font-extrabold tracking-tight">{first}</span>
-      {rest && (
-        <span className="ml-1 sm:ml-1.5 font-light italic tracking-wide opacity-90">
-          {rest}
-        </span>
-      )}
+      <span>{first}</span>
+      {rest && <span className="ml-1 sm:ml-1.5">{rest}</span>}
     </span>
   );
 };
