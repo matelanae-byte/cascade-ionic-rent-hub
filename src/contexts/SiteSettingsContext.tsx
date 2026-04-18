@@ -57,6 +57,12 @@ export interface HeaderTexts {
   links: NavLink[];
 }
 
+export interface SocialLinks {
+  vk: string;
+  telegram: string;
+  max: string;
+}
+
 export interface FooterTexts {
   brand: string;
   description: string;
@@ -68,6 +74,7 @@ export interface FooterTexts {
   email: string;
   address: string;
   copyright: string;
+  socials: SocialLinks;
 }
 
 export const DEFAULT_HERO_TEXTS: HeroTexts = {
