@@ -45,6 +45,31 @@ export interface FAQTexts {
   items: FAQItem[];
 }
 
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface HeaderTexts {
+  brand: string;
+  ctaLabel: string;
+  ctaHref: string;
+  links: NavLink[];
+}
+
+export interface FooterTexts {
+  brand: string;
+  description: string;
+  navTitle: string;
+  navLinks: NavLink[];
+  legalTitle: string;
+  contactsTitle: string;
+  phone: string;
+  email: string;
+  address: string;
+  copyright: string;
+}
+
 export const DEFAULT_HERO_TEXTS: HeroTexts = {
   eyebrow: "cascade ionic",
   title: "Аренда WFP оборудования для мойки фасадов и остекления",
@@ -134,6 +159,34 @@ export const DEFAULT_FAQ_TEXTS: FAQTexts = {
   ],
 };
 
+export const DEFAULT_HEADER_TEXTS: HeaderTexts = {
+  brand: "Cascade ionic",
+  ctaLabel: "Оставить заявку",
+  ctaHref: "#hero-form",
+  links: [
+    { label: "Каталог", href: "#catalog" },
+    { label: "FAQ", href: "#faq" },
+    { label: "Контакты", href: "#contacts" },
+  ],
+};
+
+export const DEFAULT_FOOTER_TEXTS: FooterTexts = {
+  brand: "Cascade ionic",
+  description: "Аренда профессионального оборудования для мойки фасадов и окон по всей России.",
+  navTitle: "Навигация",
+  navLinks: [
+    { label: "Каталог", href: "#catalog" },
+    { label: "Как это работает", href: "#how-it-works" },
+    { label: "FAQ", href: "#faq" },
+  ],
+  legalTitle: "Документы",
+  contactsTitle: "Контакты",
+  phone: "+7 (800) 123-45-67",
+  email: "info@cascadeionic.ru",
+  address: "Москва, Россия",
+  copyright: "Cascade ionic. Все права защищены.",
+};
+
 interface SiteSettings {
   heroImageUrl: string | null;
   heroTexts: HeroTexts;
@@ -141,6 +194,8 @@ interface SiteSettings {
   forWhomTexts: ForWhomTexts;
   whyUsTexts: WhyUsTexts;
   faqTexts: FAQTexts;
+  headerTexts: HeaderTexts;
+  footerTexts: FooterTexts;
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -151,6 +206,8 @@ interface SiteSettingsContextType extends SiteSettings {
   saveForWhomTexts: (texts: ForWhomTexts) => Promise<void>;
   saveWhyUsTexts: (texts: WhyUsTexts) => Promise<void>;
   saveFaqTexts: (texts: FAQTexts) => Promise<void>;
+  saveHeaderTexts: (texts: HeaderTexts) => Promise<void>;
+  saveFooterTexts: (texts: FooterTexts) => Promise<void>;
   loading: boolean;
 }
 
@@ -161,6 +218,8 @@ const KEY_ABOUT = "about_texts";
 const KEY_FOR_WHOM = "for_whom_texts";
 const KEY_WHY_US = "why_us_texts";
 const KEY_FAQ = "faq_texts";
+const KEY_HEADER = "header_texts";
+const KEY_FOOTER = "footer_texts";
 
 const SiteSettingsContext = createContext<SiteSettingsContextType | null>(null);
 
@@ -200,6 +259,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
     whyUsTexts: DEFAULT_WHY_US_TEXTS,
     faqTexts: DEFAULT_FAQ_TEXTS,
+    headerTexts: DEFAULT_HEADER_TEXTS,
+    footerTexts: DEFAULT_FOOTER_TEXTS,
   });
   const [loading, setLoading] = useState(true);
 
@@ -208,7 +269,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       const { data } = await supabase
         .from("site_settings")
         .select("key, value")
-        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ]);
+        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ, KEY_HEADER, KEY_FOOTER]);
 
       const next: SiteSettings = {
         heroImageUrl: null,
@@ -217,6 +278,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
         whyUsTexts: DEFAULT_WHY_US_TEXTS,
         faqTexts: DEFAULT_FAQ_TEXTS,
+        headerTexts: DEFAULT_HEADER_TEXTS,
+        footerTexts: DEFAULT_FOOTER_TEXTS,
       };
       for (const row of data ?? []) {
         if (row.key === KEY_HERO_IMG && row.value) next.heroImageUrl = row.value;
@@ -225,6 +288,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         if (row.key === KEY_FOR_WHOM) next.forWhomTexts = safeParse(row.value, DEFAULT_FOR_WHOM_TEXTS);
         if (row.key === KEY_WHY_US) next.whyUsTexts = safeParse(row.value, DEFAULT_WHY_US_TEXTS);
         if (row.key === KEY_FAQ) next.faqTexts = safeParse(row.value, DEFAULT_FAQ_TEXTS);
+        if (row.key === KEY_HEADER) next.headerTexts = safeParse(row.value, DEFAULT_HEADER_TEXTS);
+        if (row.key === KEY_FOOTER) next.footerTexts = safeParse(row.value, DEFAULT_FOOTER_TEXTS);
       }
       setSettings(next);
       setLoading(false);
@@ -290,6 +355,16 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     setSettings((prev) => ({ ...prev, faqTexts: texts }));
   };
 
+  const saveHeaderTexts = async (texts: HeaderTexts) => {
+    await upsertSetting(KEY_HEADER, JSON.stringify(texts));
+    setSettings((prev) => ({ ...prev, headerTexts: texts }));
+  };
+
+  const saveFooterTexts = async (texts: FooterTexts) => {
+    await upsertSetting(KEY_FOOTER, JSON.stringify(texts));
+    setSettings((prev) => ({ ...prev, footerTexts: texts }));
+  };
+
   return (
     <SiteSettingsContext.Provider
       value={{
@@ -301,6 +376,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         saveForWhomTexts,
         saveWhyUsTexts,
         saveFaqTexts,
+        saveHeaderTexts,
+        saveFooterTexts,
         loading,
       }}
     >

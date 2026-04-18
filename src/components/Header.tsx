@@ -1,33 +1,35 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import logo from "@/assets/logo.jpg";
 import CartDrawer from "@/components/CartDrawer";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+import BrandWordmark from "@/components/BrandWordmark";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { headerTexts } = useSiteSettings();
 
   return (
     <header className="sticky top-0 z-50 bg-gradient-to-r from-[#F28C28] to-[#6B4FB3] shadow-md">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-3">
-          <img src={logo} alt="cascade ionic" className="h-10 w-auto rounded" />
+      <div className="container flex h-16 items-center justify-between gap-3">
+        <Link to="/" className="flex items-center min-w-0" aria-label={headerTexts.brand}>
+          <BrandWordmark text={headerTexts.brand} className="text-white" sizeClass="text-lg sm:text-xl md:text-2xl" />
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-white/90">
-          <a href="#catalog" className="hover:text-white transition-colors">Каталог</a>
-          <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
-          <a href="#contacts" className="hover:text-white transition-colors">Контакты</a>
+          {headerTexts.links.map((l, i) => (
+            <a key={i} href={l.href} className="hover:text-white transition-colors">{l.label}</a>
+          ))}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
           <CartDrawer />
           <a
-            href="#hero-form"
-            className="inline-flex h-10 px-6 items-center rounded-md bg-white text-foreground text-sm font-semibold hover:bg-white/90 transition-colors shadow-sm"
+            href={headerTexts.ctaHref}
+            className="inline-flex h-10 px-6 items-center rounded-md bg-white text-foreground text-sm font-semibold hover:bg-white/90 transition-colors shadow-sm whitespace-nowrap"
           >
-            Оставить заявку
+            {headerTexts.ctaLabel}
           </a>
         </div>
 
@@ -47,15 +49,15 @@ const Header = () => {
       {/* Mobile menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-white/20 bg-[#6B4FB3]/90 backdrop-blur px-6 py-4 space-y-3 text-sm font-medium text-white">
-          <a href="#catalog" className="block hover:text-white/80" onClick={() => setMenuOpen(false)}>Каталог</a>
-          <a href="#faq" className="block hover:text-white/80" onClick={() => setMenuOpen(false)}>FAQ</a>
-          <a href="#contacts" className="block hover:text-white/80" onClick={() => setMenuOpen(false)}>Контакты</a>
+          {headerTexts.links.map((l, i) => (
+            <a key={i} href={l.href} className="block hover:text-white/80" onClick={() => setMenuOpen(false)}>{l.label}</a>
+          ))}
           <a
-            href="#hero-form"
+            href={headerTexts.ctaHref}
             className="inline-flex h-10 px-6 items-center rounded-md bg-white text-foreground text-sm font-semibold"
             onClick={() => setMenuOpen(false)}
           >
-            Оставить заявку
+            {headerTexts.ctaLabel}
           </a>
         </div>
       )}
