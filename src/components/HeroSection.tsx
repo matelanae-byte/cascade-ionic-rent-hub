@@ -7,12 +7,6 @@ import { useOrders } from "@/contexts/OrdersContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 
-const badges = [
-  { icon: Ruler, text: "До 20 м с земли" },
-  { icon: CalendarDays, text: "Аренда от 1 дня" },
-  { icon: ShieldCheck, text: "Тест перед покупкой" },
-];
-
 const periodLabels: Record<RentalPeriod, string> = {
   day: "день",
   week: "неделя",
