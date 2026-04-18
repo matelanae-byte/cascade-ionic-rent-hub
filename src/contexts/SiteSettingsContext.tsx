@@ -159,6 +159,34 @@ export const DEFAULT_FAQ_TEXTS: FAQTexts = {
   ],
 };
 
+export const DEFAULT_HEADER_TEXTS: HeaderTexts = {
+  brand: "Cascade ionic",
+  ctaLabel: "Оставить заявку",
+  ctaHref: "#hero-form",
+  links: [
+    { label: "Каталог", href: "#catalog" },
+    { label: "FAQ", href: "#faq" },
+    { label: "Контакты", href: "#contacts" },
+  ],
+};
+
+export const DEFAULT_FOOTER_TEXTS: FooterTexts = {
+  brand: "Cascade ionic",
+  description: "Аренда профессионального оборудования для мойки фасадов и окон по всей России.",
+  navTitle: "Навигация",
+  navLinks: [
+    { label: "Каталог", href: "#catalog" },
+    { label: "Как это работает", href: "#how-it-works" },
+    { label: "FAQ", href: "#faq" },
+  ],
+  legalTitle: "Документы",
+  contactsTitle: "Контакты",
+  phone: "+7 (800) 123-45-67",
+  email: "info@cascadeionic.ru",
+  address: "Москва, Россия",
+  copyright: "Cascade ionic. Все права защищены.",
+};
+
 interface SiteSettings {
   heroImageUrl: string | null;
   heroTexts: HeroTexts;
@@ -166,6 +194,8 @@ interface SiteSettings {
   forWhomTexts: ForWhomTexts;
   whyUsTexts: WhyUsTexts;
   faqTexts: FAQTexts;
+  headerTexts: HeaderTexts;
+  footerTexts: FooterTexts;
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -176,6 +206,8 @@ interface SiteSettingsContextType extends SiteSettings {
   saveForWhomTexts: (texts: ForWhomTexts) => Promise<void>;
   saveWhyUsTexts: (texts: WhyUsTexts) => Promise<void>;
   saveFaqTexts: (texts: FAQTexts) => Promise<void>;
+  saveHeaderTexts: (texts: HeaderTexts) => Promise<void>;
+  saveFooterTexts: (texts: FooterTexts) => Promise<void>;
   loading: boolean;
 }
 
@@ -186,6 +218,8 @@ const KEY_ABOUT = "about_texts";
 const KEY_FOR_WHOM = "for_whom_texts";
 const KEY_WHY_US = "why_us_texts";
 const KEY_FAQ = "faq_texts";
+const KEY_HEADER = "header_texts";
+const KEY_FOOTER = "footer_texts";
 
 const SiteSettingsContext = createContext<SiteSettingsContextType | null>(null);
 
