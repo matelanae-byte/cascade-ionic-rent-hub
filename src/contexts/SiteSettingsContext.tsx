@@ -355,6 +355,16 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     setSettings((prev) => ({ ...prev, faqTexts: texts }));
   };
 
+  const saveHeaderTexts = async (texts: HeaderTexts) => {
+    await upsertSetting(KEY_HEADER, JSON.stringify(texts));
+    setSettings((prev) => ({ ...prev, headerTexts: texts }));
+  };
+
+  const saveFooterTexts = async (texts: FooterTexts) => {
+    await upsertSetting(KEY_FOOTER, JSON.stringify(texts));
+    setSettings((prev) => ({ ...prev, footerTexts: texts }));
+  };
+
   return (
     <SiteSettingsContext.Provider
       value={{
@@ -366,6 +376,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         saveForWhomTexts,
         saveWhyUsTexts,
         saveFaqTexts,
+        saveHeaderTexts,
+        saveFooterTexts,
         loading,
       }}
     >
