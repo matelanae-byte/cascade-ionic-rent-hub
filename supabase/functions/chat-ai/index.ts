@@ -13,6 +13,22 @@ const supabase = createClient(
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY")!;
 
+async function notifyTelegram(payload: Record<string, unknown>) {
+  try {
+    const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/notify-telegram`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) {
+    console.error("notifyTelegram failed", e);
+  }
+}
+
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -97,6 +113,8 @@ Deno.serve(async (req) => {
       await supabase.from("chat_messages").insert({ ticket_id: ticket.id, role: "assistant", content: greeting });
       await supabase.from("chat_tickets").update({ last_message_at: new Date().toISOString() }).eq("id", ticket.id);
 
+      notifyTelegram({ type: "new_ticket", name: ticket.name, phone: ticket.phone, ticketId: ticket.id });
+
       return json({ ticket });
     }
 
@@ -122,6 +140,13 @@ Deno.serve(async (req) => {
         .from("chat_tickets")
         .update({ last_message_at: new Date().toISOString(), unread_admin: true })
         .eq("id", ticketId);
+
+      notifyTelegram({
+        type: "new_message",
+        name: ticket.name,
+        phone: ticket.phone,
+        content: String(content),
+      });
 
       // Only AI replies if status === 'ai'
       if (ticket.status === "ai") {
@@ -157,6 +182,7 @@ Deno.serve(async (req) => {
 
     if (action === "request_operator") {
       if (!ticketId) return json({ error: "ticketId required" }, 400);
+      const { data: ticket } = await supabase.from("chat_tickets").select("*").eq("id", ticketId).maybeSingle();
       await supabase
         .from("chat_tickets")
         .update({ status: "waiting_operator", unread_admin: true, last_message_at: new Date().toISOString() })
@@ -166,6 +192,9 @@ Deno.serve(async (req) => {
         role: "system",
         content: "Запрос передан оператору. С вами скоро свяжется живой консультант.",
       });
+      if (ticket) {
+        notifyTelegram({ type: "operator_request", name: ticket.name, phone: ticket.phone });
+      }
       return json({ ok: true });
     }
 
@@ -195,6 +224,15 @@ Deno.serve(async (req) => {
         ticket_id: ticketId,
         role: "system",
         content: `Заявка №${order.id.slice(0, 8)} оформлена. С вами свяжется менеджер.`,
+      });
+      notifyTelegram({
+        type: "order",
+        name: ticket.name,
+        phone: ticket.phone,
+        city: city || "—",
+        items,
+        total: Number(total) || 0,
+        orderId: order.id,
       });
       return json({ ok: true, orderId: order.id });
     }
