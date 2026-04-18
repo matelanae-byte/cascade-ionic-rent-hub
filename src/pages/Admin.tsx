@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
 import { HeroTextsTab } from "@/components/admin/HeroTextsTab";
+import { SectionsContentTab } from "@/components/admin/SectionsContentTab";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -465,6 +466,7 @@ const Admin = () => {
             <TabsTrigger value="orders">Заявки</TabsTrigger>
             <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
             <TabsTrigger value="hero">Главный экран</TabsTrigger>
+            <TabsTrigger value="sections">Секции главной</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -486,6 +488,10 @@ const Admin = () => {
 
           <TabsContent value="hero">
             <HeroTextsTab />
+          </TabsContent>
+
+          <TabsContent value="sections">
+            <SectionsContentTab />
           </TabsContent>
 
           <TabsContent value="settings">
