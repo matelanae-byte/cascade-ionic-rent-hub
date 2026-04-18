@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { Package, Grip, Droplets, Wrench, Brush } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 export interface Product {
   id: string;
@@ -10,171 +11,8 @@ export interface Product {
   prices: { day: number; week: number; month: number };
   hidden: boolean;
   order: number;
-  image?: string; // base64 or URL
+  image?: string;
 }
-
-const STORAGE_BASE = "https://lcvgkrznmupwfuejvhfj.supabase.co/storage/v1/object/public/product-images";
-
-const defaultProducts: Product[] = [
-  // === Комплекты ===
-  {
-    id: "wfp-kit-10",
-    category: "Комплекты",
-    iconName: "Package",
-    name: "Стартовый WFP-комплект до 10 м",
-    desc: "Базовый комплект для начинающих: штанга 10 м, портативный фильтр, щётка и шланг.",
-    prices: { day: 5000, week: 25000, month: 65000 },
-    hidden: false,
-    order: 0,
-    image: `${STORAGE_BASE}/wfp-kit-10.png`,
-  },
-  {
-    id: "wfp-kit-15",
-    category: "Комплекты",
-    iconName: "Package",
-    name: "Комплект WFP для мойки фасадов до 15 м",
-    desc: "Мобильный комплект для мойки фасадов и окон с земли до 15 метров: станция, штанга, щётка, шланг.",
-    prices: { day: 7000, week: 35000, month: 90000 },
-    hidden: false,
-    order: 1,
-    image: `${STORAGE_BASE}/wfp-kit-15.png`,
-  },
-  {
-    id: "wfp-kit-20",
-    category: "Комплекты",
-    iconName: "Package",
-    name: "Профессиональный WFP-комплект до 20 м",
-    desc: "Полный комплект для работы на высоте до 20 м: усиленная штанга, промышленная станция, несколько щёток.",
-    prices: { day: 10000, week: 50000, month: 130000 },
-    hidden: false,
-    order: 2,
-    image: `${STORAGE_BASE}/wfp-kit-20.png`,
-  },
-  // === Штанги ===
-  {
-    id: "pole-8-fiber",
-    category: "Штанги",
-    iconName: "Grip",
-    name: "WFP-штанга 8 м (стеклопластик)",
-    desc: "Бюджетная стеклопластиковая штанга для работы до 8 м. Прочная, подходит для новичков.",
-    prices: { day: 2000, week: 8000, month: 20000 },
-    hidden: false,
-    order: 3,
-    image: `${STORAGE_BASE}/pole-8-fiber.png`,
-  },
-  {
-    id: "pole-12",
-    category: "Штанги",
-    iconName: "Grip",
-    name: "WFP-штанга 12 м (карбон)",
-    desc: "Лёгкая карбоновая телескопическая штанга для мойки окон и фасадов до 12 м.",
-    prices: { day: 3000, week: 12000, month: 30000 },
-    hidden: false,
-    order: 4,
-    image: `${STORAGE_BASE}/pole-12.png`,
-  },
-  {
-    id: "pole-15",
-    category: "Штанги",
-    iconName: "Grip",
-    name: "WFP-штанга 15 м (карбон)",
-    desc: "Усиленная карбоновая штанга для работы до 15 м с земли.",
-    prices: { day: 4000, week: 16000, month: 40000 },
-    hidden: false,
-    order: 5,
-    image: `${STORAGE_BASE}/pole-15.png`,
-  },
-  {
-    id: "pole-18",
-    category: "Штанги",
-    iconName: "Grip",
-    name: "WFP-штанга 18 м (карбон)",
-    desc: "Профессиональная карбоновая штанга для мойки фасадов на высоте до 18 м.",
-    prices: { day: 5500, week: 22000, month: 55000 },
-    hidden: false,
-    order: 6,
-    image: `${STORAGE_BASE}/pole-18.png`,
-  },
-  // === Системы подачи воды ===
-  {
-    id: "water-station",
-    category: "Системы подачи воды",
-    iconName: "Droplets",
-    name: "Станция подготовки воды для WFP",
-    desc: "Система очищенной воды для мойки фасадов и окон без разводов.",
-    prices: { day: 5000, week: 20000, month: 55000 },
-    hidden: false,
-    order: 7,
-    image: `${STORAGE_BASE}/water-station.png`,
-  },
-  {
-    id: "water-station-compact",
-    category: "Системы подачи воды",
-    iconName: "Droplets",
-    name: "Компактная станция подготовки воды",
-    desc: "Портативная система фильтрации для небольших объектов. Лёгкая, один картридж.",
-    prices: { day: 3000, week: 12000, month: 32000 },
-    hidden: false,
-    order: 8,
-    image: `${STORAGE_BASE}/water-station-compact.png`,
-  },
-  {
-    id: "mobile-filtration",
-    category: "Системы подачи воды",
-    iconName: "Droplets",
-    name: "Мобильная система фильтрации на тележке",
-    desc: "Передвижная многоступенчатая система фильтрации воды на колёсах для крупных объектов.",
-    prices: { day: 6000, week: 25000, month: 65000 },
-    hidden: false,
-    order: 9,
-    image: `${STORAGE_BASE}/mobile-filtration.png`,
-  },
-  // === Доп. оборудование ===
-  {
-    id: "chem-pump",
-    category: "Доп. оборудование",
-    iconName: "Wrench",
-    name: "Насос-дозатор химии",
-    desc: "Подача химии для сложных загрязнений и мойки витрин.",
-    prices: { day: 2000, week: 8000, month: 20000 },
-    hidden: false,
-    order: 10,
-    image: `${STORAGE_BASE}/chem-pump.png`,
-  },
-  {
-    id: "hose-reel",
-    category: "Доп. оборудование",
-    iconName: "Wrench",
-    name: "Шланг высокого давления с катушкой",
-    desc: "Шланг с катушкой для удобной работы на объекте, подключение к станции.",
-    prices: { day: 1500, week: 6000, month: 15000 },
-    hidden: false,
-    order: 11,
-    image: `${STORAGE_BASE}/hose-reel.png`,
-  },
-  {
-    id: "brush-set",
-    category: "Доп. оборудование",
-    iconName: "Brush",
-    name: "Набор щёток для WFP-штанг",
-    desc: "Комплект щёток разных размеров и жёсткости для различных типов поверхностей.",
-    prices: { day: 1000, week: 4000, month: 10000 },
-    hidden: false,
-    order: 12,
-    image: `${STORAGE_BASE}/brush-set.png`,
-  },
-  {
-    id: "trolley-cart",
-    category: "Доп. оборудование",
-    iconName: "Wrench",
-    name: "Тележка для оборудования",
-    desc: "Профессиональная тележка на колёсах с отсеками для штанг и аксессуаров.",
-    prices: { day: 1500, week: 6000, month: 15000 },
-    hidden: false,
-    order: 13,
-    image: `${STORAGE_BASE}/trolley-cart.png`,
-  },
-];
 
 export const iconMap: Record<string, React.ElementType> = {
   Package,
@@ -187,10 +25,11 @@ export const iconMap: Record<string, React.ElementType> = {
 interface ProductsContextType {
   products: Product[];
   visibleProducts: Product[];
-  addProduct: (p: Omit<Product, "id" | "order">) => void;
-  updateProduct: (id: string, updates: Partial<Omit<Product, "id">>) => void;
-  deleteProduct: (id: string) => void;
-  reorderProducts: (fromIndex: number, toIndex: number) => void;
+  loading: boolean;
+  addProduct: (p: Omit<Product, "id" | "order">) => Promise<void>;
+  updateProduct: (id: string, updates: Partial<Omit<Product, "id">>) => Promise<void>;
+  deleteProduct: (id: string) => Promise<void>;
+  reorderProducts: (fromIndex: number, toIndex: number) => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | null>(null);
@@ -201,59 +40,129 @@ export const useProducts = () => {
   return ctx;
 };
 
-const STORAGE_KEY = "cascade_products";
-const CATALOG_VERSION = "v2"; // bump to reset localStorage when defaults change
-const VERSION_KEY = "cascade_products_version";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const rowToProduct = (r: any): Product => ({
+  id: r.id,
+  category: r.category,
+  iconName: r.icon_name,
+  name: r.name,
+  desc: r.description ?? "",
+  prices: { day: Number(r.price_day), week: Number(r.price_week), month: Number(r.price_month) },
+  hidden: !!r.hidden,
+  order: r.sort_order ?? 0,
+  image: r.image ?? undefined,
+});
 
-const loadProducts = (): Product[] => {
-  try {
-    const storedVersion = localStorage.getItem(VERSION_KEY);
-    if (storedVersion === CATALOG_VERSION) {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.setItem(VERSION_KEY, CATALOG_VERSION);
-    }
-  } catch {}
-  return defaultProducts;
+type ProductRow = {
+  category?: string;
+  icon_name?: string;
+  name?: string;
+  description?: string;
+  price_day?: number;
+  price_week?: number;
+  price_month?: number;
+  hidden?: boolean;
+  sort_order?: number;
+  image?: string | null;
+};
+
+const productToRow = (p: Partial<Product>): ProductRow => {
+  const row: ProductRow = {};
+  if (p.category !== undefined) row.category = p.category;
+  if (p.iconName !== undefined) row.icon_name = p.iconName;
+  if (p.name !== undefined) row.name = p.name;
+  if (p.desc !== undefined) row.description = p.desc;
+  if (p.prices !== undefined) {
+    row.price_day = p.prices.day;
+    row.price_week = p.prices.week;
+    row.price_month = p.prices.month;
+  }
+  if (p.hidden !== undefined) row.hidden = p.hidden;
+  if (p.order !== undefined) row.sort_order = p.order;
+  if (p.image !== undefined) row.image = p.image ?? null;
+  return row;
 };
 
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {
-  const [products, setProducts] = useState<Product[]>(loadProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProducts = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (error) {
+      console.error("Failed to fetch products:", error);
+      return;
+    }
+    setProducts((data ?? []).map(rowToProduct));
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  }, [products]);
+    fetchProducts();
+    const channel = supabase
+      .channel("products-changes")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => {
+        fetchProducts();
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchProducts]);
 
-  const addProduct = useCallback((p: Omit<Product, "id" | "order">) => {
-    setProducts((prev) => [
-      ...prev,
-      { ...p, id: `product-${Date.now()}`, order: prev.length },
-    ]);
-  }, []);
-
-  const updateProduct = useCallback((id: string, updates: Partial<Omit<Product, "id">>) => {
-    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
-  }, []);
-
-  const deleteProduct = useCallback((id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id).map((p, i) => ({ ...p, order: i })));
-  }, []);
-
-  const reorderProducts = useCallback((fromIndex: number, toIndex: number) => {
-    setProducts((prev) => {
-      const sorted = [...prev].sort((a, b) => a.order - b.order);
-      const [moved] = sorted.splice(fromIndex, 1);
-      sorted.splice(toIndex, 0, moved);
-      return sorted.map((p, i) => ({ ...p, order: i }));
+  const addProduct = useCallback(async (p: Omit<Product, "id" | "order">) => {
+    const nextOrder = products.length;
+    const { error } = await supabase.from("products").insert({
+      ...productToRow(p),
+      sort_order: nextOrder,
+      category: p.category,
+      icon_name: p.iconName,
+      name: p.name,
     });
-  }, []);
+    if (error) {
+      console.error("Failed to add product:", error);
+      throw error;
+    }
+    await fetchProducts();
+  }, [products.length, fetchProducts]);
+
+  const updateProduct = useCallback(async (id: string, updates: Partial<Omit<Product, "id">>) => {
+    const { error } = await supabase.from("products").update(productToRow(updates)).eq("id", id);
+    if (error) {
+      console.error("Failed to update product:", error);
+      throw error;
+    }
+    await fetchProducts();
+  }, [fetchProducts]);
+
+  const deleteProduct = useCallback(async (id: string) => {
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) {
+      console.error("Failed to delete product:", error);
+      throw error;
+    }
+    await fetchProducts();
+  }, [fetchProducts]);
+
+  const reorderProducts = useCallback(async (fromIndex: number, toIndex: number) => {
+    const sorted = [...products].sort((a, b) => a.order - b.order);
+    const [moved] = sorted.splice(fromIndex, 1);
+    sorted.splice(toIndex, 0, moved);
+    const updates = sorted.map((p, i) => ({ id: p.id, sort_order: i }));
+    // Optimistic local update
+    setProducts(sorted.map((p, i) => ({ ...p, order: i })));
+    await Promise.all(
+      updates.map((u) => supabase.from("products").update({ sort_order: u.sort_order }).eq("id", u.id))
+    );
+  }, [products]);
 
   const visibleProducts = [...products].filter((p) => !p.hidden).sort((a, b) => a.order - b.order);
 
   return (
-    <ProductsContext.Provider value={{ products, visibleProducts, addProduct, updateProduct, deleteProduct, reorderProducts }}>
+    <ProductsContext.Provider value={{ products, visibleProducts, loading, addProduct, updateProduct, deleteProduct, reorderProducts }}>
       {children}
     </ProductsContext.Provider>
   );
