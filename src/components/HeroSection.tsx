@@ -21,7 +21,13 @@ const HeroSection = () => {
   const [city, setCity] = useState("");
   const { items, totalPrice, clearCart } = useCart();
   const { addOrder } = useOrders();
-  const { heroImageUrl } = useSiteSettings();
+  const { heroImageUrl, heroTexts } = useSiteSettings();
+
+  const badges = [
+    { icon: Ruler, text: heroTexts.badge1 },
+    { icon: CalendarDays, text: heroTexts.badge2 },
+    { icon: ShieldCheck, text: heroTexts.badge3 },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +60,11 @@ const HeroSection = () => {
     setCity("");
   };
 
+  const privacyKey = "политикой конфиденциальности";
+  const privacyIdx = heroTexts.privacyNote.toLowerCase().indexOf(privacyKey);
+  const privacyBefore = privacyIdx >= 0 ? heroTexts.privacyNote.slice(0, privacyIdx) : heroTexts.privacyNote + " ";
+  const privacyAfter = privacyIdx >= 0 ? heroTexts.privacyNote.slice(privacyIdx + privacyKey.length) : "";
+
   return (
     <section className="relative overflow-hidden bg-background">
       <div className="container py-16 md:py-24">
@@ -62,19 +73,19 @@ const HeroSection = () => {
           <div className="space-y-8">
             <div className="space-y-4">
               <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-                cascade ionic
+                {heroTexts.eyebrow}
               </p>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-foreground">
-                Аренда WFP оборудования для&nbsp;мойки фасадов и&nbsp;остекления
+                {heroTexts.title}
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
-                Подберём комплект под ваш объект, чтобы вы могли начать работу без&nbsp;покупки дорогого оборудования на&nbsp;старте.
+                {heroTexts.subtitle}
               </p>
             </div>
 
             {/* Badges */}
             <div className="flex flex-wrap gap-3">
-              {badges.map((b) => (
+              {badges.filter((b) => b.text?.trim()).map((b) => (
                 <div
                   key={b.text}
                   className="flex items-center gap-2 rounded-md border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-sm"
@@ -91,7 +102,7 @@ const HeroSection = () => {
               onSubmit={handleSubmit}
               className="rounded-lg border bg-card p-6 shadow-sm space-y-4 max-w-md"
             >
-              <p className="text-sm font-semibold text-foreground">Получите расчёт аренды за 15 минут</p>
+              <p className="text-sm font-semibold text-foreground">{heroTexts.formTitle}</p>
 
               {/* Cart summary */}
               {items.length > 0 && (
@@ -123,11 +134,12 @@ const HeroSection = () => {
               <Input placeholder="Телефон" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               <Input placeholder="Город" value={city} onChange={(e) => setCity(e.target.value)} required />
               <Button type="submit" className="w-full gap-2 font-semibold">
-                {items.length > 0 ? "Оформить заявку" : "Отправить заявку"} <ArrowRight size={16} />
+                {items.length > 0 ? heroTexts.submitLabelWithCart : heroTexts.submitLabel} <ArrowRight size={16} />
               </Button>
               <p className="text-xs text-muted-foreground">
-                Нажимая кнопку, вы соглашаетесь с{" "}
-                <a href="/privacy" className="underline hover:text-primary">политикой конфиденциальности</a>
+                {privacyBefore}
+                <a href="/privacy" className="underline hover:text-primary">{privacyKey}</a>
+                {privacyAfter}
               </p>
             </form>
           </div>
