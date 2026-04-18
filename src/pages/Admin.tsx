@@ -466,6 +466,7 @@ const Admin = () => {
             <TabsTrigger value="orders">Заявки</TabsTrigger>
             <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
             <TabsTrigger value="hero">Главный экран</TabsTrigger>
+            <TabsTrigger value="sections">Секции главной</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -487,6 +488,10 @@ const Admin = () => {
 
           <TabsContent value="hero">
             <HeroTextsTab />
+          </TabsContent>
+
+          <TabsContent value="sections">
+            <SectionsContentTab />
           </TabsContent>
 
           <TabsContent value="settings">
