@@ -113,6 +113,8 @@ Deno.serve(async (req) => {
       await supabase.from("chat_messages").insert({ ticket_id: ticket.id, role: "assistant", content: greeting });
       await supabase.from("chat_tickets").update({ last_message_at: new Date().toISOString() }).eq("id", ticket.id);
 
+      notifyTelegram({ type: "new_ticket", name: ticket.name, phone: ticket.phone, ticketId: ticket.id });
+
       return json({ ticket });
     }
 
