@@ -141,6 +141,13 @@ Deno.serve(async (req) => {
         .update({ last_message_at: new Date().toISOString(), unread_admin: true })
         .eq("id", ticketId);
 
+      notifyTelegram({
+        type: "new_message",
+        name: ticket.name,
+        phone: ticket.phone,
+        content: String(content),
+      });
+
       // Only AI replies if status === 'ai'
       if (ticket.status === "ai") {
         const { data: history } = await supabase
@@ -175,6 +182,7 @@ Deno.serve(async (req) => {
 
     if (action === "request_operator") {
       if (!ticketId) return json({ error: "ticketId required" }, 400);
+      const { data: ticket } = await supabase.from("chat_tickets").select("*").eq("id", ticketId).maybeSingle();
       await supabase
         .from("chat_tickets")
         .update({ status: "waiting_operator", unread_admin: true, last_message_at: new Date().toISOString() })
@@ -184,6 +192,9 @@ Deno.serve(async (req) => {
         role: "system",
         content: "Запрос передан оператору. С вами скоро свяжется живой консультант.",
       });
+      if (ticket) {
+        notifyTelegram({ type: "operator_request", name: ticket.name, phone: ticket.phone });
+      }
       return json({ ok: true });
     }
 
