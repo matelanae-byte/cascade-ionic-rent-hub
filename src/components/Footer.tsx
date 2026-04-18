@@ -1,12 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import BrandWordmark from "@/components/BrandWordmark";
-
-// ─── Ссылки на соцсети — меняйте здесь ───────────────────────────────
-const SOCIAL_VK  = "https://vk.com/";   // ВКонтакте: вставьте вашу ссылку здесь
-const SOCIAL_TG  = "https://t.me/";     // Telegram:  вставьте вашу ссылку здесь
-const SOCIAL_MAX = "https://max.ru/";   // MAX:       вставьте вашу ссылку здесь
-// ─────────────────────────────────────────────────────────────────────
+import maxIcon from "@/assets/max-icon.jpg";
 
 const VkIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
@@ -18,21 +13,13 @@ const TgIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="M21.95 4.36 18.7 19.7c-.24 1.08-.88 1.34-1.78.83l-4.92-3.62-2.37 2.28c-.26.26-.48.48-.99.48l.35-5 9.1-8.22c.4-.35-.09-.55-.62-.2L6.21 13.2 1.36 11.69c-1.05-.33-1.07-1.05.22-1.55L20.6 2.97c.88-.32 1.65.2 1.35 1.39z"/>
   </svg>
 );
-// MAX (мессенджер): нет в Lucide — используем монограмму
-const MaxIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden {...props}>
-    <path d="M5 4h2.7l3 5.4h.1L13.8 4h2.7v16h-2.5V8.6h-.1l-2.7 4.8h-.6L7.9 8.6h-.1V20H5V4z"/>
-  </svg>
-);
-
-const SOCIALS = [
-  { href: SOCIAL_VK,  label: "ВКонтакте", Icon: VkIcon },
-  { href: SOCIAL_TG,  label: "Telegram",  Icon: TgIcon },
-  { href: SOCIAL_MAX, label: "MAX",       Icon: MaxIcon },
-];
 
 const Footer = () => {
   const { footerTexts } = useSiteSettings();
+  const { socials } = footerTexts;
+
+  const linkClass =
+    "inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 transition-all hover:bg-white/20 hover:text-white hover:scale-105";
 
   return (
     <footer id="contacts" className="bg-footer-bg text-white">
@@ -49,18 +36,31 @@ const Footer = () => {
               {footerTexts.description}
             </p>
             <div className="flex items-center gap-2 pt-1">
-              {SOCIALS.map(({ href, label, Icon }) => (
+              {socials.vk && (
+                <a href={socials.vk} target="_blank" rel="noopener noreferrer" aria-label="ВКонтакте" className={linkClass}>
+                  <VkIcon className="h-4 w-4" />
+                </a>
+              )}
+              {socials.telegram && (
+                <a href={socials.telegram} target="_blank" rel="noopener noreferrer" aria-label="Telegram" className={linkClass}>
+                  <TgIcon className="h-4 w-4" />
+                </a>
+              )}
+              {socials.max && (
                 <a
-                  key={label}
-                  href={href}
+                  href={socials.max}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={label}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/70 transition-all hover:bg-white/20 hover:text-white hover:scale-105"
+                  aria-label="MAX"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full overflow-hidden ring-1 ring-white/15 transition-all hover:ring-white/40 hover:scale-105"
                 >
-                  <Icon className="h-4 w-4" />
+                  <img
+                    src={maxIcon}
+                    alt=""
+                    className="h-full w-full object-cover saturate-[0.6] brightness-110 opacity-95"
+                  />
                 </a>
-              ))}
+              )}
             </div>
           </div>
 
