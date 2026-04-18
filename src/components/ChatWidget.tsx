@@ -53,7 +53,7 @@ export const ChatWidget = () => {
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { items, total, clearCart } = useCart();
+  const { items, totalPrice, clearCart } = useCart();
 
   // Load existing ticket from localStorage
   useEffect(() => {
@@ -167,9 +167,9 @@ export const ChatWidget = () => {
           name: i.name,
           quantity: i.quantity,
           period: i.period,
-          price: i.price,
+          price: i.prices[i.period] * i.quantity,
         })),
-        total,
+        total: totalPrice,
         city: "—",
       });
       clearCart();
