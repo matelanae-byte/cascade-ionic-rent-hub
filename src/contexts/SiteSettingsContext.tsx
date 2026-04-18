@@ -45,6 +45,31 @@ export interface FAQTexts {
   items: FAQItem[];
 }
 
+export interface NavLink {
+  label: string;
+  href: string;
+}
+
+export interface HeaderTexts {
+  brand: string;
+  ctaLabel: string;
+  ctaHref: string;
+  links: NavLink[];
+}
+
+export interface FooterTexts {
+  brand: string;
+  description: string;
+  navTitle: string;
+  navLinks: NavLink[];
+  legalTitle: string;
+  contactsTitle: string;
+  phone: string;
+  email: string;
+  address: string;
+  copyright: string;
+}
+
 export const DEFAULT_HERO_TEXTS: HeroTexts = {
   eyebrow: "cascade ionic",
   title: "Аренда WFP оборудования для мойки фасадов и остекления",
