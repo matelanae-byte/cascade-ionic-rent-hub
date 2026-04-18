@@ -53,8 +53,21 @@ const rowToProduct = (r: any): Product => ({
   image: r.image ?? undefined,
 });
 
-const productToRow = (p: Partial<Product>) => {
-  const row: Record<string, unknown> = {};
+type ProductRow = {
+  category?: string;
+  icon_name?: string;
+  name?: string;
+  description?: string;
+  price_day?: number;
+  price_week?: number;
+  price_month?: number;
+  hidden?: boolean;
+  sort_order?: number;
+  image?: string | null;
+};
+
+const productToRow = (p: Partial<Product>): ProductRow => {
+  const row: ProductRow = {};
   if (p.category !== undefined) row.category = p.category;
   if (p.iconName !== undefined) row.icon_name = p.iconName;
   if (p.name !== undefined) row.name = p.name;
@@ -66,7 +79,7 @@ const productToRow = (p: Partial<Product>) => {
   }
   if (p.hidden !== undefined) row.hidden = p.hidden;
   if (p.order !== undefined) row.sort_order = p.order;
-  if (p.image !== undefined) row.image = p.image;
+  if (p.image !== undefined) row.image = p.image ?? null;
   return row;
 };
 
