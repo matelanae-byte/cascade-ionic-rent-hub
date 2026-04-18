@@ -301,7 +301,10 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         if (row.key === KEY_WHY_US) next.whyUsTexts = safeParse(row.value, DEFAULT_WHY_US_TEXTS);
         if (row.key === KEY_FAQ) next.faqTexts = safeParse(row.value, DEFAULT_FAQ_TEXTS);
         if (row.key === KEY_HEADER) next.headerTexts = safeParse(row.value, DEFAULT_HEADER_TEXTS);
-        if (row.key === KEY_FOOTER) next.footerTexts = safeParse(row.value, DEFAULT_FOOTER_TEXTS);
+        if (row.key === KEY_FOOTER) {
+          const f = safeParse(row.value, DEFAULT_FOOTER_TEXTS);
+          next.footerTexts = { ...f, socials: { ...DEFAULT_FOOTER_TEXTS.socials, ...(f.socials ?? {}) } };
+        }
       }
       setSettings(next);
       setLoading(false);
