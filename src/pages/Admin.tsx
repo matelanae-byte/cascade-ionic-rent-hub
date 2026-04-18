@@ -14,6 +14,7 @@ import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
+import { HeroTextsTab } from "@/components/admin/HeroTextsTab";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -458,11 +459,12 @@ const Admin = () => {
 
       <main className="container py-6">
         <Tabs defaultValue="dashboard">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto">
             <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="orders">Заявки</TabsTrigger>
             <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
+            <TabsTrigger value="hero">Главный экран</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
 
@@ -480,6 +482,10 @@ const Admin = () => {
 
           <TabsContent value="chats">
             <ChatsTab />
+          </TabsContent>
+
+          <TabsContent value="hero">
+            <HeroTextsTab />
           </TabsContent>
 
           <TabsContent value="settings">
