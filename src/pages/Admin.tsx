@@ -8,7 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useProducts, iconMap, type Product } from "@/contexts/ProductsContext";
-import { useOrders, type Order } from "@/contexts/OrdersContext";
+import { useOrders, ORDER_STATUS_LABELS, type Order, type OrderStatus } from "@/contexts/OrdersContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -195,10 +196,53 @@ const ProductsTab = () => {
   );
 };
 
+/* ─── Status Badge ─── */
+const statusBadgeClass: Record<OrderStatus, string> = {
+  new: "bg-primary text-primary-foreground hover:bg-primary/80",
+  in_progress: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+  delivered: "bg-emerald-600 text-white hover:bg-emerald-600/80",
+  cancelled: "bg-destructive text-destructive-foreground hover:bg-destructive/80",
+};
+
+const StatusBadge = ({ status }: { status: OrderStatus }) => (
+  <Badge className={`text-xs border-transparent ${statusBadgeClass[status]}`}>
+    {ORDER_STATUS_LABELS[status]}
+  </Badge>
+);
+
+/* ─── Dashboard Tab ─── */
+const DashboardTab = () => {
+  const { orders } = useOrders();
+  const counts: Record<OrderStatus, number> = {
+    new: orders.filter((o) => o.status === "new").length,
+    in_progress: orders.filter((o) => o.status === "in_progress").length,
+    delivered: orders.filter((o) => o.status === "delivered").length,
+    cancelled: orders.filter((o) => o.status === "cancelled").length,
+  };
+  const tiles: { key: OrderStatus | "total"; label: string; value: number; cls: string }[] = [
+    { key: "total", label: "Всего заявок", value: orders.length, cls: "bg-card border-border" },
+    { key: "new", label: "Новые", value: counts.new, cls: "bg-primary/10 border-primary/30" },
+    { key: "in_progress", label: "В работе", value: counts.in_progress, cls: "bg-secondary border-border" },
+    { key: "delivered", label: "Доставлены", value: counts.delivered, cls: "bg-emerald-500/10 border-emerald-500/30" },
+    { key: "cancelled", label: "Отменены", value: counts.cancelled, cls: "bg-destructive/10 border-destructive/30" },
+  ];
+  return (
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      {tiles.map((t) => (
+        <div key={t.key} className={`rounded-lg border p-5 ${t.cls}`}>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{t.label}</p>
+          <p className="text-3xl font-bold text-foreground mt-2">{t.value}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 /* ─── Orders Tab ─── */
 const OrdersTab = () => {
-  const { orders, toggleProcessed } = useOrders();
-  const [selected, setSelected] = useState<Order | null>(null);
+  const { orders, updateStatus } = useOrders();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selected = selectedId ? orders.find((o) => o.id === selectedId) ?? null : null;
 
   return (
     <div className="space-y-4">
@@ -221,7 +265,7 @@ const OrdersTab = () => {
             </TableHeader>
             <TableBody>
               {orders.map((o, i) => (
-                <TableRow key={o.id} className={o.processed ? "opacity-60" : ""}>
+                <TableRow key={o.id} className={o.status === "cancelled" || o.status === "delivered" ? "opacity-70" : ""}>
                   <TableCell className="text-muted-foreground text-xs">{orders.length - i}</TableCell>
                   <TableCell className="text-sm">{new Date(o.createdAt).toLocaleDateString("ru-RU")}</TableCell>
                   <TableCell className="font-medium text-sm">{o.name}</TableCell>
@@ -229,12 +273,10 @@ const OrdersTab = () => {
                   <TableCell className="text-sm">{o.city || "—"}</TableCell>
                   <TableCell className="text-right text-sm font-semibold">{formatPrice(o.total)}</TableCell>
                   <TableCell className="text-center">
-                    <Badge variant={o.processed ? "secondary" : "default"} className="cursor-pointer text-xs" onClick={() => toggleProcessed(o.id)}>
-                      {o.processed ? "Обработана" : "Новая"}
-                    </Badge>
+                    <StatusBadge status={o.status} />
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setSelected(o)}>Открыть</Button>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedId(o.id)}>Открыть</Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -243,7 +285,7 @@ const OrdersTab = () => {
         </div>
       )}
 
-      <Dialog open={!!selected} onOpenChange={() => setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={() => setSelectedId(null)}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>Заявка от {selected?.name}</DialogTitle>
@@ -254,7 +296,7 @@ const OrdersTab = () => {
                 <div><span className="text-muted-foreground">Телефон:</span> <span className="font-medium">{selected.phone}</span></div>
                 <div><span className="text-muted-foreground">Город:</span> <span className="font-medium">{selected.city || "—"}</span></div>
                 <div><span className="text-muted-foreground">Дата:</span> <span className="font-medium">{new Date(selected.createdAt).toLocaleString("ru-RU")}</span></div>
-                <div><span className="text-muted-foreground">Статус:</span> <Badge variant={selected.processed ? "secondary" : "default"} className="text-xs ml-1">{selected.processed ? "Обработана" : "Новая"}</Badge></div>
+                <div className="flex items-center gap-2"><span className="text-muted-foreground">Статус:</span> <StatusBadge status={selected.status} /></div>
               </div>
 
               <div>
@@ -278,9 +320,17 @@ const OrdersTab = () => {
                 <span className="text-lg font-bold text-primary">{formatPrice(selected.total)}</span>
               </div>
 
-              <Button onClick={() => { toggleProcessed(selected.id); setSelected({ ...selected, processed: !selected.processed }); }} variant={selected.processed ? "outline" : "default"} className="w-full">
-                {selected.processed ? "Вернуть в новые" : "Отметить как обработанную"}
-              </Button>
+              <div className="space-y-1.5 pt-2 border-t">
+                <label className="text-sm font-medium text-foreground">Изменить статус</label>
+                <Select value={selected.status} onValueChange={(v) => updateStatus(selected.id, v as OrderStatus)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(ORDER_STATUS_LABELS) as OrderStatus[]).map((s) => (
+                      <SelectItem key={s} value={s}>{ORDER_STATUS_LABELS[s]}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           )}
         </DialogContent>
@@ -382,12 +432,17 @@ const Admin = () => {
       </header>
 
       <main className="container py-6">
-        <Tabs defaultValue="products">
+        <Tabs defaultValue="dashboard">
           <TabsList className="mb-6">
+            <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="orders">Заявки</TabsTrigger>
             <TabsTrigger value="settings">Настройки</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <DashboardTab />
+          </TabsContent>
 
           <TabsContent value="products">
             <ProductsTab />
