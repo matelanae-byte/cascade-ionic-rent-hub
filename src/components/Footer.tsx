@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import BrandWordmark from "@/components/BrandWordmark";
-import maxIcon from "@/assets/max-icon.jpg";
+
 
 // Outline icons — matching weight/style for visual consistency
 const VkIcon = (props: React.SVGProps<SVGSVGElement>) => (
