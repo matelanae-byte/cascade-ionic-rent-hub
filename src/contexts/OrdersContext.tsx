@@ -81,15 +81,33 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchOrders]);
 
   const addOrder = useCallback(async (order: Omit<Order, "id" | "createdAt" | "processed" | "status">) => {
-    const { error } = await supabase.from("orders").insert({
-      name: order.name,
-      phone: order.phone,
-      city: order.city,
-      items: order.items as any,
-      total: order.total,
-    });
+    const { data, error } = await supabase
+      .from("orders")
+      .insert({
+        name: order.name,
+        phone: order.phone,
+        city: order.city,
+        items: order.items as any,
+        total: order.total,
+      })
+      .select()
+      .single();
     if (error) {
       console.error("Failed to insert order:", error);
+    } else if (data) {
+      supabase.functions
+        .invoke("notify-telegram", {
+          body: {
+            type: "order",
+            name: order.name,
+            phone: order.phone,
+            city: order.city,
+            items: order.items,
+            total: order.total,
+            orderId: data.id,
+          },
+        })
+        .catch((e) => console.error("notify-telegram failed", e));
     }
     fetchOrders();
   }, [fetchOrders]);
