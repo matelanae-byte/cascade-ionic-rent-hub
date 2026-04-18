@@ -8,6 +8,7 @@ import { ProductsProvider } from "@/contexts/ProductsContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
+import { ChatWidget } from "@/components/ChatWidget";
 import Index from "./pages/Index";
 import Privacy from "./pages/Privacy";
 import Offer from "./pages/Offer";
@@ -38,6 +39,7 @@ const App = () => (
                     <Route path="/admin" element={<Admin />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <ChatWidget />
                 </BrowserRouter>
               </TooltipProvider>
             </CartProvider>

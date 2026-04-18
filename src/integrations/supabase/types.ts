@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          ticket_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          ticket_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "chat_tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_tickets: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string
+          name: string
+          order_id: string | null
+          phone: string
+          status: string
+          unread_admin: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          name: string
+          order_id?: string | null
+          phone: string
+          status?: string
+          unread_admin?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          name?: string
+          order_id?: string | null
+          phone?: string
+          status?: string
+          unread_admin?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           city: string
