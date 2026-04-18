@@ -259,6 +259,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
     whyUsTexts: DEFAULT_WHY_US_TEXTS,
     faqTexts: DEFAULT_FAQ_TEXTS,
+    headerTexts: DEFAULT_HEADER_TEXTS,
+    footerTexts: DEFAULT_FOOTER_TEXTS,
   });
   const [loading, setLoading] = useState(true);
 
@@ -267,7 +269,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       const { data } = await supabase
         .from("site_settings")
         .select("key, value")
-        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ]);
+        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ, KEY_HEADER, KEY_FOOTER]);
 
       const next: SiteSettings = {
         heroImageUrl: null,
@@ -276,6 +278,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
         whyUsTexts: DEFAULT_WHY_US_TEXTS,
         faqTexts: DEFAULT_FAQ_TEXTS,
+        headerTexts: DEFAULT_HEADER_TEXTS,
+        footerTexts: DEFAULT_FOOTER_TEXTS,
       };
       for (const row of data ?? []) {
         if (row.key === KEY_HERO_IMG && row.value) next.heroImageUrl = row.value;
@@ -284,6 +288,8 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         if (row.key === KEY_FOR_WHOM) next.forWhomTexts = safeParse(row.value, DEFAULT_FOR_WHOM_TEXTS);
         if (row.key === KEY_WHY_US) next.whyUsTexts = safeParse(row.value, DEFAULT_WHY_US_TEXTS);
         if (row.key === KEY_FAQ) next.faqTexts = safeParse(row.value, DEFAULT_FAQ_TEXTS);
+        if (row.key === KEY_HEADER) next.headerTexts = safeParse(row.value, DEFAULT_HEADER_TEXTS);
+        if (row.key === KEY_FOOTER) next.footerTexts = safeParse(row.value, DEFAULT_FOOTER_TEXTS);
       }
       setSettings(next);
       setLoading(false);
