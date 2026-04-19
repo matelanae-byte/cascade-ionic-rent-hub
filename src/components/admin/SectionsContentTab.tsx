@@ -7,10 +7,12 @@ import { Check, RotateCcw, Plus, Trash2, ChevronUp, ChevronDown, Type } from "lu
 import {
   useSiteSettings,
   DEFAULT_ABOUT_TEXTS,
+  DEFAULT_CATALOG_TEXTS,
   DEFAULT_FOR_WHOM_TEXTS,
   DEFAULT_WHY_US_TEXTS,
   DEFAULT_FAQ_TEXTS,
   type AboutTexts,
+  type CatalogTexts,
   type ForWhomTexts,
   type WhyUsTexts,
   type FAQTexts,
@@ -84,6 +86,25 @@ const AboutEditor = () => {
           onChange={(e) => ed.setDraft({ ...ed.draft, body: e.target.value })}
         />
         <p className="text-xs text-muted-foreground">Переносы строк сохраняются.</p>
+      </div>
+      <Toolbar {...ed} />
+    </div>
+  );
+};
+
+/* ─── Catalog ─── */
+const CatalogEditor = () => {
+  const { catalogTexts, saveCatalogTexts } = useSiteSettings();
+  const ed = useEditor<CatalogTexts>(catalogTexts, saveCatalogTexts, DEFAULT_CATALOG_TEXTS);
+  return (
+    <div className="space-y-4 rounded-lg border bg-card p-5">
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Заголовок</label>
+        <Input value={ed.draft.title} onChange={(e) => ed.setDraft({ ...ed.draft, title: e.target.value })} />
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Подзаголовок</label>
+        <Input value={ed.draft.subtitle} onChange={(e) => ed.setDraft({ ...ed.draft, subtitle: e.target.value })} />
       </div>
       <Toolbar {...ed} />
     </div>
@@ -275,12 +296,16 @@ export const SectionsContentTab = () => {
       <Tabs defaultValue="about">
         <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="about">О нас</TabsTrigger>
+          <TabsTrigger value="catalog">Каталог</TabsTrigger>
           <TabsTrigger value="for-whom">Для кого</TabsTrigger>
           <TabsTrigger value="why-us">Почему мы</TabsTrigger>
           <TabsTrigger value="faq">FAQ</TabsTrigger>
         </TabsList>
         <TabsContent value="about" className="mt-4">
           <AboutEditor />
+        </TabsContent>
+        <TabsContent value="catalog" className="mt-4">
+          <CatalogEditor />
         </TabsContent>
         <TabsContent value="for-whom" className="mt-4">
           <ForWhomEditor />
