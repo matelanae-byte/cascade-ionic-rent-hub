@@ -19,6 +19,11 @@ export interface AboutTexts {
   body: string;
 }
 
+export interface CatalogTexts {
+  title: string;
+  subtitle: string;
+}
+
 export interface CardItem {
   title: string;
   desc: string;
@@ -89,6 +94,11 @@ export const DEFAULT_HERO_TEXTS: HeroTexts = {
   submitLabel: "Отправить заявку",
   submitLabelWithCart: "Оформить заявку",
   privacyNote: "Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности",
+};
+
+export const DEFAULT_CATALOG_TEXTS: CatalogTexts = {
+  title: "Каталог аренды",
+  subtitle: "Профессиональное WFP-оборудование для мойки фасадов и окон",
 };
 
 export const DEFAULT_ABOUT_TEXTS: AboutTexts = {
@@ -202,6 +212,7 @@ export const DEFAULT_FOOTER_TEXTS: FooterTexts = {
 interface SiteSettings {
   heroImageUrl: string | null;
   heroTexts: HeroTexts;
+  catalogTexts: CatalogTexts;
   aboutTexts: AboutTexts;
   forWhomTexts: ForWhomTexts;
   whyUsTexts: WhyUsTexts;
@@ -214,6 +225,7 @@ interface SiteSettingsContextType extends SiteSettings {
   uploadHeroImage: (file: File) => Promise<string>;
   removeHeroImage: () => void;
   saveHeroTexts: (texts: HeroTexts) => Promise<void>;
+  saveCatalogTexts: (texts: CatalogTexts) => Promise<void>;
   saveAboutTexts: (texts: AboutTexts) => Promise<void>;
   saveForWhomTexts: (texts: ForWhomTexts) => Promise<void>;
   saveWhyUsTexts: (texts: WhyUsTexts) => Promise<void>;
@@ -226,6 +238,7 @@ interface SiteSettingsContextType extends SiteSettings {
 const HERO_IMAGE_PATH = "site/hero-image";
 const KEY_HERO_IMG = "hero_image_url";
 const KEY_HERO_TEXTS = "hero_texts";
+const KEY_CATALOG = "catalog_texts";
 const KEY_ABOUT = "about_texts";
 const KEY_FOR_WHOM = "for_whom_texts";
 const KEY_WHY_US = "why_us_texts";
@@ -267,6 +280,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<SiteSettings>({
     heroImageUrl: null,
     heroTexts: DEFAULT_HERO_TEXTS,
+    catalogTexts: DEFAULT_CATALOG_TEXTS,
     aboutTexts: DEFAULT_ABOUT_TEXTS,
     forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
     whyUsTexts: DEFAULT_WHY_US_TEXTS,
@@ -281,11 +295,12 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       const { data } = await supabase
         .from("site_settings")
         .select("key, value")
-        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ, KEY_HEADER, KEY_FOOTER]);
+        .in("key", [KEY_HERO_IMG, KEY_HERO_TEXTS, KEY_CATALOG, KEY_ABOUT, KEY_FOR_WHOM, KEY_WHY_US, KEY_FAQ, KEY_HEADER, KEY_FOOTER]);
 
       const next: SiteSettings = {
         heroImageUrl: null,
         heroTexts: DEFAULT_HERO_TEXTS,
+        catalogTexts: DEFAULT_CATALOG_TEXTS,
         aboutTexts: DEFAULT_ABOUT_TEXTS,
         forWhomTexts: DEFAULT_FOR_WHOM_TEXTS,
         whyUsTexts: DEFAULT_WHY_US_TEXTS,
@@ -296,6 +311,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
       for (const row of data ?? []) {
         if (row.key === KEY_HERO_IMG && row.value) next.heroImageUrl = row.value;
         if (row.key === KEY_HERO_TEXTS) next.heroTexts = safeParse(row.value, DEFAULT_HERO_TEXTS);
+        if (row.key === KEY_CATALOG) next.catalogTexts = safeParse(row.value, DEFAULT_CATALOG_TEXTS);
         if (row.key === KEY_ABOUT) next.aboutTexts = safeParse(row.value, DEFAULT_ABOUT_TEXTS);
         if (row.key === KEY_FOR_WHOM) next.forWhomTexts = safeParse(row.value, DEFAULT_FOR_WHOM_TEXTS);
         if (row.key === KEY_WHY_US) next.whyUsTexts = safeParse(row.value, DEFAULT_WHY_US_TEXTS);
@@ -350,6 +366,11 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
     setSettings((prev) => ({ ...prev, heroTexts: texts }));
   };
 
+  const saveCatalogTexts = async (texts: CatalogTexts) => {
+    await upsertSetting(KEY_CATALOG, JSON.stringify(texts));
+    setSettings((prev) => ({ ...prev, catalogTexts: texts }));
+  };
+
   const saveAboutTexts = async (texts: AboutTexts) => {
     await upsertSetting(KEY_ABOUT, JSON.stringify(texts));
     setSettings((prev) => ({ ...prev, aboutTexts: texts }));
@@ -387,6 +408,7 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         uploadHeroImage,
         removeHeroImage,
         saveHeroTexts,
+        saveCatalogTexts,
         saveAboutTexts,
         saveForWhomTexts,
         saveWhyUsTexts,
