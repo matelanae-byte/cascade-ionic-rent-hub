@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Package } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts, iconMap } from "@/contexts/ProductsContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { toast } from "sonner";
 import type { Product } from "@/contexts/ProductsContext";
 
@@ -10,6 +11,7 @@ const formatPrice = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 const CatalogSection = () => {
   const { addItem } = useCart();
   const { visibleProducts } = useProducts();
+  const { catalogTexts } = useSiteSettings();
 
   const handleAdd = (p: Product) => {
     addItem({ id: p.id, name: p.name, prices: p.prices });
@@ -20,10 +22,8 @@ const CatalogSection = () => {
     <section id="catalog" className="py-16 md:py-24 bg-background">
       <div className="container">
         <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">Каталог аренды</h2>
-          <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-            Профессиональное WFP-оборудование для мойки фасадов и окон
-          </p>
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">{catalogTexts.title}</h2>
+          <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">{catalogTexts.subtitle}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
