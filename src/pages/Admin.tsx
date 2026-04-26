@@ -12,6 +12,7 @@ import { useOrders, ORDER_STATUS_LABELS, type Order, type OrderStatus } from "@/
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
 import { HeroTextsTab } from "@/components/admin/HeroTextsTab";
@@ -294,9 +295,15 @@ const DashboardTab = () => {
 
 /* ─── Orders Tab ─── */
 const OrdersTab = () => {
-  const { orders, updateStatus } = useOrders();
+  const { orders, updateStatus, deleteOrder } = useOrders();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = selectedId ? orders.find((o) => o.id === selectedId) ?? null : null;
+
+  const handleDelete = async (id: string) => {
+    await deleteOrder(id);
+    if (selectedId === id) setSelectedId(null);
+    toast.success("Заявка удалена");
+  };
 
   return (
     <div className="space-y-4">
@@ -330,7 +337,30 @@ const OrdersTab = () => {
                     <StatusBadge status={o.status} />
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedId(o.id)}>Открыть</Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedId(o.id)}>Открыть</Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" aria-label="Удалить заявку">
+                            <Trash2 size={16} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Удалить заявку?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Заявка от {o.name} будет удалена без возможности восстановления.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(o.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Удалить
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -406,6 +436,30 @@ const OrdersTab = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="pt-2 border-t">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" className="w-full text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5 gap-2">
+                      <Trash2 size={16} /> Удалить заявку
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Удалить заявку?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Заявка от {selected.name} будет удалена без возможности восстановления.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Отмена</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(selected.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Удалить
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           )}

@@ -43,6 +43,7 @@ interface OrdersContextType {
   addOrder: (order: Omit<Order, "id" | "createdAt" | "processed" | "status">) => Promise<void>;
   toggleProcessed: (id: string) => void;
   updateStatus: (id: string, status: OrderStatus) => Promise<void>;
+  deleteOrder: (id: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -159,8 +160,17 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
     setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
   }, []);
 
+  const deleteOrder = useCallback(async (id: string) => {
+    const { error } = await supabase.from("orders").delete().eq("id", id);
+    if (error) {
+      console.error("Failed to delete order:", error);
+      return;
+    }
+    setOrders((prev) => prev.filter((o) => o.id !== id));
+  }, []);
+
   return (
-    <OrdersContext.Provider value={{ orders, addOrder, toggleProcessed, updateStatus, loading }}>
+    <OrdersContext.Provider value={{ orders, addOrder, toggleProcessed, updateStatus, deleteOrder, loading }}>
       {children}
     </OrdersContext.Provider>
   );
