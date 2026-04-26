@@ -237,7 +237,27 @@ const SelectAndQuoteSection = () => {
             />
           </div>
 
-          <Button type="submit" size="lg" className="w-full md:w-auto h-12 px-8 gap-2 font-semibold">
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="consent"
+              checked={agreed}
+              onCheckedChange={(v) => setAgreed(v === true)}
+              className="mt-0.5"
+            />
+            <label htmlFor="consent" className="text-sm text-muted-foreground leading-snug cursor-pointer">
+              Я согласен на обработку персональных данных в соответствии с{" "}
+              <a href="/privacy" className="underline hover:text-primary">
+                политикой конфиденциальности
+              </a>
+            </label>
+          </div>
+
+          <Button
+            type="submit"
+            size="lg"
+            disabled={!agreed}
+            className="w-full md:w-auto h-12 px-8 gap-2 font-semibold"
+          >
             Получить расчет
             <ArrowRight size={16} />
           </Button>
