@@ -84,36 +84,54 @@ export type Database = {
       }
       orders: {
         Row: {
+          area: string | null
           city: string
+          comment: string | null
           created_at: string
+          height: string | null
           id: string
           items: Json
           name: string
+          people: string | null
           phone: string
           processed: boolean
+          rental_term: string | null
           status: string
+          task_type: string | null
           total: number
         }
         Insert: {
+          area?: string | null
           city: string
+          comment?: string | null
           created_at?: string
+          height?: string | null
           id?: string
           items?: Json
           name: string
+          people?: string | null
           phone: string
           processed?: boolean
+          rental_term?: string | null
           status?: string
+          task_type?: string | null
           total?: number
         }
         Update: {
+          area?: string | null
           city?: string
+          comment?: string | null
           created_at?: string
+          height?: string | null
           id?: string
           items?: Json
           name?: string
+          people?: string | null
           phone?: string
           processed?: boolean
+          rental_term?: string | null
           status?: string
+          task_type?: string | null
           total?: number
         }
         Relationships: []
