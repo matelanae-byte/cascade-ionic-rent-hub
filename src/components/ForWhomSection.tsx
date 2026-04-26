@@ -7,8 +7,8 @@ const ForWhomSection = () => {
   const { forWhomTexts } = useSiteSettings();
   return (
     <section className="py-20 md:py-28 bg-background">
-      <div className="container">
-        <div className="mb-14 max-w-2xl">
+      <div className="container max-w-3xl">
+        <div className="mb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Для кого</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{forWhomTexts.title}</h2>
           {forWhomTexts.subtitle && (
