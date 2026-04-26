@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
+import { ReviewsTab } from "@/components/admin/ReviewsTab";
 import { HeroTextsTab } from "@/components/admin/HeroTextsTab";
 import { SectionsContentTab } from "@/components/admin/SectionsContentTab";
 import { HeaderFooterTab } from "@/components/admin/HeaderFooterTab";
@@ -568,6 +569,7 @@ const Admin = () => {
             <TabsTrigger value="products">Товары</TabsTrigger>
             <TabsTrigger value="orders">Заявки</TabsTrigger>
             <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
+            <TabsTrigger value="reviews">Отзывы</TabsTrigger>
             <TabsTrigger value="hero">Главный экран</TabsTrigger>
             <TabsTrigger value="sections">Секции главной</TabsTrigger>
             <TabsTrigger value="header-footer">Шапка и футер</TabsTrigger>
@@ -588,6 +590,10 @@ const Admin = () => {
 
           <TabsContent value="chats">
             <ChatsTab />
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <ReviewsTab />
           </TabsContent>
 
           <TabsContent value="hero">
