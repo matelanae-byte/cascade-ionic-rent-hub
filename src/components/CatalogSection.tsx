@@ -8,6 +8,33 @@ import type { Product } from "@/contexts/ProductsContext";
 
 const formatPrice = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 
+/**
+ * Supabase Storage Image Transformations.
+ * Rewrites a public-object URL into a render/image URL that returns a
+ * resized + compressed version of the image. Falls back to the original
+ * URL for non-Supabase images (e.g. external URLs or data URLs).
+ *
+ * Example:
+ *   .../object/public/product-images/wfp-kit-10.png
+ *      → .../render/image/public/product-images/wfp-kit-10.png?width=600&quality=70
+ */
+const transformedImage = (src: string | undefined, width: number, quality = 70): string | undefined => {
+  if (!src) return src;
+  if (!src.includes("/storage/v1/object/public/")) return src;
+  const rendered = src.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
+  const sep = rendered.includes("?") ? "&" : "?";
+  return `${rendered}${sep}width=${width}&quality=${quality}&resize=cover`;
+};
+
+const buildSrcSet = (src: string | undefined): string | undefined => {
+  if (!src || !src.includes("/storage/v1/object/public/")) return undefined;
+  return [
+    `${transformedImage(src, 480)} 480w`,
+    `${transformedImage(src, 720)} 720w`,
+    `${transformedImage(src, 1000)} 1000w`,
+  ].join(", ");
+};
+
 const CatalogSection = () => {
   const { addItem } = useCart();
   const { visibleProducts } = useProducts();
@@ -35,24 +62,30 @@ const CatalogSection = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {visibleProducts.map((p) => {
+          {visibleProducts.map((p, idx) => {
             const Icon = iconMap[p.iconName] || Package;
+            // First 3 cards are visible above the fold on mobile — load eagerly.
+            const isAboveFold = idx < 3;
+            const optimizedSrc = transformedImage(p.image, 720);
+            const srcSet = buildSrcSet(p.image);
             return (
               <article
                 key={p.id}
-                className="group flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-primary/20 hover:shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.18)]"
+                className="group flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden sm:transition-all sm:hover:border-primary/20 sm:hover:shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.18)]"
               >
                 {/* 1. Image — always visible, fixed height on mobile, aspect ratio on larger screens */}
-                <div
-                  className="relative w-full bg-muted overflow-hidden shrink-0 block h-56 sm:h-auto sm:aspect-[4/3]"
-                >
-                  {p.image ? (
+                <div className="relative w-full bg-muted overflow-hidden shrink-0 block h-56 sm:h-auto sm:aspect-[4/3]">
+                  {optimizedSrc ? (
                     <img
-                      src={p.image}
-                      alt={p.name}
-                      loading="eager"
+                      src={optimizedSrc}
+                      srcSet={srcSet}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      alt={`Фото оборудования: ${p.name}`}
+                      loading={isAboveFold ? "eager" : "lazy"}
+                      // @ts-expect-error fetchpriority is a valid HTML attribute
+                      fetchpriority={isAboveFold ? "high" : "auto"}
                       decoding="async"
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      className="absolute inset-0 w-full h-full object-cover sm:transition-transform sm:duration-500 sm:group-hover:scale-[1.03]"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
