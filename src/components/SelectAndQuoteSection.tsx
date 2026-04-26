@@ -81,6 +81,7 @@ const SelectAndQuoteSection = () => {
     setName("");
     setPhone("");
     setComment("");
+    setAgreed(false);
   };
 
   const privacyKey = "политикой конфиденциальности";
