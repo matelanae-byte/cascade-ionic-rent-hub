@@ -6,12 +6,14 @@ import { ArrowRight } from "lucide-react";
 
 const QuickSelectSection = () => {
   const [task, setTask] = useState("");
+  const [area, setArea] = useState("");
+  const [people, setPeople] = useState("");
   const [height, setHeight] = useState("");
   const [city, setCity] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Подбор: ${task}, ${height}, ${city}`);
+    alert(`Подбор: ${task}, ${area}, ${people}, ${height}, ${city}`);
   };
 
   return (
