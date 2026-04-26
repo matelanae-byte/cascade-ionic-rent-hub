@@ -168,6 +168,7 @@ const SelectAndQuoteSection = () => {
                   <SelectItem value="Неделя">Неделя</SelectItem>
                   <SelectItem value="Месяц">Месяц</SelectItem>
                   <SelectItem value="Более месяца">Более месяца</SelectItem>
+                  <SelectItem value="Другое">Другое</SelectItem>
                 </SelectContent>
               </Select>
             </div>
