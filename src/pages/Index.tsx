@@ -6,6 +6,7 @@ import WhyUsSection from "@/components/WhyUsSection";
 import CatalogSection from "@/components/CatalogSection";
 import RentalIncludesSection from "@/components/RentalIncludesSection";
 import QuickSelectSection from "@/components/QuickSelectSection";
+import LeadFormSection from "@/components/LeadFormSection";
 import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
 const Index = () => {
@@ -20,6 +21,7 @@ const Index = () => {
         <CatalogSection />
         <RentalIncludesSection />
         <QuickSelectSection />
+        <LeadFormSection />
         <FAQSection />
       </main>
       <Footer />
