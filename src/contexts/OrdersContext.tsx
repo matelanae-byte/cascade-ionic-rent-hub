@@ -111,9 +111,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchOrders]);
 
   const addOrder = useCallback(async (order: Omit<Order, "id" | "createdAt" | "processed" | "status">) => {
-    const { data, error } = await supabase
+    const orderId = crypto.randomUUID();
+
+    const { error } = await supabase
       .from("orders")
       .insert({
+        id: orderId,
         name: order.name,
         phone: order.phone,
         city: order.city,
@@ -125,36 +128,41 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         height: order.height ?? null,
         rental_term: order.rentalTerm ?? null,
         comment: order.comment ?? null,
-      })
-      .select()
-      .single();
+      });
+
     if (error) {
       console.error("Failed to insert order:", error);
       toast.error("Не удалось сохранить заявку", {
         description: error.message ?? "Попробуйте ещё раз или свяжитесь с нами по телефону",
       });
-      return;
-    } else if (data) {
-      supabase.functions
-        .invoke("notify-telegram", {
-          body: {
-            type: "order",
-            name: order.name,
-            phone: order.phone,
-            city: order.city,
-            items: order.items,
-            total: order.total,
-            orderId: data.id,
-            taskType: order.taskType,
-            area: order.area,
-            people: order.people,
-            height: order.height,
-            rentalTerm: order.rentalTerm,
-            comment: order.comment,
-          },
-        })
-        .catch((e) => console.error("notify-telegram failed", e));
+      throw error;
     }
+
+    const { error: notifyError } = await supabase.functions.invoke("notify-telegram", {
+      body: {
+        type: "order",
+        name: order.name,
+        phone: order.phone,
+        city: order.city,
+        items: order.items,
+        total: order.total,
+        orderId,
+        taskType: order.taskType,
+        area: order.area,
+        people: order.people,
+        height: order.height,
+        rentalTerm: order.rentalTerm,
+        comment: order.comment,
+      },
+    });
+
+    if (notifyError) {
+      console.error("notify-telegram failed", notifyError);
+      toast.error("Заявка сохранена, но Telegram-уведомление не отправилось", {
+        description: "Заявка уже есть в админке — проверьте настройки Telegram.",
+      });
+    }
+
     fetchOrders();
   }, [fetchOrders]);
 

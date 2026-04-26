@@ -53,19 +53,23 @@ const SelectAndQuoteSection = () => {
       price: item.prices[item.period] * item.quantity,
     }));
 
-    await addOrder({
-      name,
-      phone,
-      city,
-      items: orderItems,
-      total: totalPrice,
-      taskType: taskType || undefined,
-      area: area || undefined,
-      people: people || undefined,
-      height: height || undefined,
-      rentalTerm: rentalTerm || undefined,
-      comment: comment || undefined,
-    });
+    try {
+      await addOrder({
+        name,
+        phone,
+        city,
+        items: orderItems,
+        total: totalPrice,
+        taskType: taskType || undefined,
+        area: area || undefined,
+        people: people || undefined,
+        height: height || undefined,
+        rentalTerm: rentalTerm || undefined,
+        comment: comment || undefined,
+      });
+    } catch {
+      return;
+    }
 
     toast.success("Заявка отправлена!", {
       description: "Мы подберём комплект и свяжемся с вами с расчётом стоимости",
