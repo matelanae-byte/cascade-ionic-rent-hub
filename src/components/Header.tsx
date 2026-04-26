@@ -15,7 +15,7 @@ const Header = () => {
           <img
             src={logo}
             alt={headerTexts.brand}
-            className="h-9 md:h-11 w-auto object-contain"
+            className="h-14 md:h-16 w-auto object-contain"
           />
         </Link>
 
