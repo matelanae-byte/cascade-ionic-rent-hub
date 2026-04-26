@@ -8,7 +8,7 @@ const WhyUsSection = () => {
   return (
     <section className="py-20 md:py-28 bg-muted/40">
       <div className="container">
-        <div className="text-left mb-14 max-w-2xl">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Почему мы</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
             {whyUsTexts.title}
