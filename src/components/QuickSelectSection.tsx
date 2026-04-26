@@ -44,6 +44,32 @@ const QuickSelectSection = () => {
               </Select>
             </div>
             <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Площадь (м²)</label>
+              <Select value={area} onValueChange={setArea}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Выберите" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="100">До 100 м²</SelectItem>
+                  <SelectItem value="500">До 500 м²</SelectItem>
+                  <SelectItem value="500+">Более 500 м²</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">Количество человек</label>
+              <Select value={people} onValueChange={setPeople}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Выберите" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 человек</SelectItem>
+                  <SelectItem value="2">2 человека</SelectItem>
+                  <SelectItem value="3+">3 и более</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Высота объекта</label>
               <Select value={height} onValueChange={setHeight}>
                 <SelectTrigger>
