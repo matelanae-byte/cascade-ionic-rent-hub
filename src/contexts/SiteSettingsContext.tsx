@@ -188,6 +188,7 @@ export const DEFAULT_HEADER_TEXTS: HeaderTexts = {
   ctaHref: "#lead-form",
   links: [
     { label: "Каталог", href: "#catalog" },
+    { label: "Отзывы", href: "#reviews" },
     { label: "FAQ", href: "#faq" },
     { label: "Контакты", href: "#contacts" },
   ],

@@ -8,6 +8,7 @@ import { ProductsProvider } from "@/contexts/ProductsContext";
 import { OrdersProvider } from "@/contexts/OrdersContext";
 import { AuthProvider } from "@/hooks/useAuth";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
+import { ReviewsProvider } from "@/contexts/ReviewsContext";
 import { ChatWidget } from "@/components/ChatWidget";
 import Index from "./pages/Index";
 import Privacy from "./pages/Privacy";
@@ -25,6 +26,7 @@ const App = () => (
       <SiteSettingsProvider>
         <ProductsProvider>
           <OrdersProvider>
+            <ReviewsProvider>
             <CartProvider>
               <TooltipProvider>
                 <Toaster />
@@ -43,6 +45,7 @@ const App = () => (
                 </BrowserRouter>
               </TooltipProvider>
             </CartProvider>
+            </ReviewsProvider>
           </OrdersProvider>
         </ProductsProvider>
       </SiteSettingsProvider>
