@@ -43,6 +43,7 @@ interface OrdersContextType {
   addOrder: (order: Omit<Order, "id" | "createdAt" | "processed" | "status">) => Promise<void>;
   toggleProcessed: (id: string) => void;
   updateStatus: (id: string, status: OrderStatus) => Promise<void>;
+  deleteOrder: (id: string) => Promise<void>;
   loading: boolean;
 }
 
