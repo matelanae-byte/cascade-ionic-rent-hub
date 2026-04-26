@@ -337,7 +337,30 @@ const OrdersTab = () => {
                     <StatusBadge status={o.status} />
                   </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => setSelectedId(o.id)}>Открыть</Button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedId(o.id)}>Открыть</Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" aria-label="Удалить заявку">
+                            <Trash2 size={16} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Удалить заявку?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Заявка от {o.name} будет удалена без возможности восстановления.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(o.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                              Удалить
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
