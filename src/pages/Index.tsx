@@ -10,8 +10,7 @@ import Footer from "@/components/Footer";
 // renders fast on mobile without waiting for the catalog/forms/FAQ.
 const CatalogSection = lazy(() => import("@/components/CatalogSection"));
 const RentalIncludesSection = lazy(() => import("@/components/RentalIncludesSection"));
-const QuickSelectSection = lazy(() => import("@/components/QuickSelectSection"));
-const LeadFormSection = lazy(() => import("@/components/LeadFormSection"));
+const SelectAndQuoteSection = lazy(() => import("@/components/SelectAndQuoteSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
 
 const SectionFallback = () => (
@@ -34,8 +33,7 @@ const Index = () => {
         <Suspense fallback={<SectionFallback />}>
           <CatalogSection />
           <RentalIncludesSection />
-          <QuickSelectSection />
-          <LeadFormSection />
+          <SelectAndQuoteSection />
           <FAQSection />
         </Suspense>
       </main>
