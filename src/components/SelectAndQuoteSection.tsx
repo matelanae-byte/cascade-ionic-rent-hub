@@ -31,6 +31,7 @@ const SelectAndQuoteSection = () => {
   const [phone, setPhone] = useState("");
   // Доп.
   const [comment, setComment] = useState("");
+  const [agreed, setAgreed] = useState(false);
 
   const { items, totalPrice, clearCart } = useCart();
   const { addOrder } = useOrders();
