@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import CartDrawer from "@/components/CartDrawer";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import BrandWordmark from "@/components/BrandWordmark";
 
@@ -24,7 +23,6 @@ const Header = () => {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <CartDrawer />
           <a
             href={headerTexts.ctaHref}
             className="inline-flex h-10 px-6 items-center rounded-md bg-white text-foreground text-sm font-semibold hover:bg-white/90 transition-colors shadow-sm whitespace-nowrap"
@@ -35,7 +33,6 @@ const Header = () => {
 
         {/* Mobile toggle */}
         <div className="md:hidden flex items-center gap-1">
-          <CartDrawer />
           <button
             className="p-2 text-white"
             onClick={() => setMenuOpen(!menuOpen)}
