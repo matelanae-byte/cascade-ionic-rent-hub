@@ -11,7 +11,7 @@ const FAQSection = () => {
   return (
     <section id="faq" className="py-16 md:py-24 bg-background">
       <div className="container max-w-3xl">
-        <div className="mb-12">
+        <div className="text-center mb-12">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground">{faqTexts.title}</h2>
         </div>
 

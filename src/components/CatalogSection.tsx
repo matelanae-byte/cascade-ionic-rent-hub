@@ -52,7 +52,7 @@ const CatalogSection = () => {
   return (
     <section id="catalog" className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="mb-14 max-w-2xl">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">
             Каталог
           </p>
