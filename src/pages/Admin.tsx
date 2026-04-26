@@ -437,6 +437,30 @@ const OrdersTab = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="pt-2 border-t">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="outline" className="w-full text-destructive hover:text-destructive border-destructive/30 hover:bg-destructive/5 gap-2">
+                      <Trash2 size={16} /> Удалить заявку
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Удалить заявку?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Заявка от {selected.name} будет удалена без возможности восстановления.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Отмена</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(selected.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Удалить
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
           )}
         </DialogContent>
