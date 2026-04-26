@@ -29,6 +29,13 @@ export interface Order {
   createdAt: string;
   processed: boolean;
   status: OrderStatus;
+  // Параметры подбора (необязательные)
+  taskType?: string;
+  area?: string;
+  people?: string;
+  height?: string;
+  rentalTerm?: string;
+  comment?: string;
 }
 
 interface OrdersContextType {
@@ -70,6 +77,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
           createdAt: r.created_at,
           processed: r.processed,
           status: (r.status ?? "new") as OrderStatus,
+          taskType: r.task_type ?? undefined,
+          area: r.area ?? undefined,
+          people: r.people ?? undefined,
+          height: r.height ?? undefined,
+          rentalTerm: r.rental_term ?? undefined,
+          comment: r.comment ?? undefined,
         }))
       );
     }
@@ -89,6 +102,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
         city: order.city,
         items: order.items as any,
         total: order.total,
+        task_type: order.taskType ?? null,
+        area: order.area ?? null,
+        people: order.people ?? null,
+        height: order.height ?? null,
+        rental_term: order.rentalTerm ?? null,
+        comment: order.comment ?? null,
       })
       .select()
       .single();
@@ -105,6 +124,12 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
             items: order.items,
             total: order.total,
             orderId: data.id,
+            taskType: order.taskType,
+            area: order.area,
+            people: order.people,
+            height: order.height,
+            rentalTerm: order.rentalTerm,
+            comment: order.comment,
           },
         })
         .catch((e) => console.error("notify-telegram failed", e));

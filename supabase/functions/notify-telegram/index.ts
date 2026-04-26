@@ -44,7 +44,8 @@ async function sendTelegram(text: string): Promise<{ ok: boolean; error?: string
 }
 
 function buildText(payload: any): string {
-  const { type, name, phone, content, orderId, items, total, city, ticketId } = payload ?? {};
+  const { type, name, phone, content, orderId, items, total, city, ticketId,
+          taskType, area, people, height, rentalTerm, comment } = payload ?? {};
   const safeName = escapeHtml(name || "—");
   const safePhone = escapeHtml(phone || "—");
 
@@ -57,13 +58,22 @@ function buildText(payload: any): string {
           )
           .join("\n")
       : "";
+    const params = [
+      taskType ? `• Тип задачи: ${escapeHtml(taskType)}` : "",
+      area ? `• Площадь: ${escapeHtml(area)}` : "",
+      people ? `• Человек: ${escapeHtml(people)}` : "",
+      height ? `• Высота: ${escapeHtml(height)}` : "",
+      rentalTerm ? `• Срок аренды: ${escapeHtml(rentalTerm)}` : "",
+    ].filter(Boolean).join("\n");
     return [
       `🧾 <b>Новая заявка</b>${orderId ? ` №${escapeHtml(String(orderId).slice(0, 8))}` : ""}`,
       `<b>Имя:</b> ${safeName}`,
       `<b>Телефон:</b> ${safePhone}`,
       city ? `<b>Город:</b> ${escapeHtml(city)}` : "",
+      params ? `\n<b>Параметры подбора:</b>\n${params}` : "",
       lines ? `\n<b>Состав:</b>\n${lines}` : "",
-      total != null ? `\n<b>Итого:</b> ${total}₽` : "",
+      total != null && total > 0 ? `\n<b>Итого:</b> ${total}₽` : "",
+      comment ? `\n<b>Комментарий:</b>\n${escapeHtml(comment)}` : "",
     ]
       .filter(Boolean)
       .join("\n");
