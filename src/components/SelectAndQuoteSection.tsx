@@ -191,7 +191,7 @@ const SelectAndQuoteSection = () => {
             <div className="rounded-md border border-primary/15 bg-primary/[0.04] p-4 space-y-2">
               <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <ShoppingCart size={16} className="text-primary" />
-                Товары в заявке
+                Вы выбрали:
               </div>
               <ul className="space-y-1">
                 {items.map((item) => (
