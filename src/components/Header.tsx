@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
-import BrandWordmark from "@/components/BrandWordmark";
+import logo from "@/assets/logo.jpg";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,10 +12,10 @@ const Header = () => {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-border">
       <div className="container flex h-16 md:h-20 items-center justify-between gap-4">
         <Link to="/" className="flex items-center min-w-0" aria-label={headerTexts.brand}>
-          <BrandWordmark
-            text={headerTexts.brand}
-            className="text-foreground"
-            sizeClass="text-base sm:text-lg md:text-xl"
+          <img
+            src={logo}
+            alt={headerTexts.brand}
+            className="h-9 md:h-11 w-auto object-contain"
           />
         </Link>
 
