@@ -135,22 +135,14 @@ const CatalogSection = () => {
                     ) : null}
                   </div>
 
-                  {/* 6. Цены — день / неделя / месяц */}
-                  <div className="mt-auto pt-5 border-t border-border space-y-2">
+                  {/* 6. Цена */}
+                  <div className="mt-auto pt-5 border-t border-border">
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs text-muted-foreground">Аренда от</span>
                       <span className="text-lg font-bold text-foreground">
                         {formatPrice(p.prices.day)}
                         <span className="text-xs font-normal text-muted-foreground">/день</span>
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Неделя</span>
-                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.week)}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Месяц</span>
-                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.month)}</span>
                     </div>
                   </div>
 
@@ -159,7 +151,7 @@ const CatalogSection = () => {
                     onClick={() => handleAdd(p)}
                     className="mt-6 w-full h-11 font-semibold gap-2"
                   >
-                    Оставить заявку
+                    Добавить в заявку
                     <ArrowRight size={16} />
                   </Button>
                 </div>
