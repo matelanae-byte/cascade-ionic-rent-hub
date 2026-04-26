@@ -179,7 +179,7 @@ export const DEFAULT_FAQ_TEXTS: FAQTexts = {
 export const DEFAULT_HEADER_TEXTS: HeaderTexts = {
   brand: "Cascade ionic",
   ctaLabel: "Оставить заявку",
-  ctaHref: "#hero-form",
+  ctaHref: "#lead-form",
   links: [
     { label: "Каталог", href: "#catalog" },
     { label: "FAQ", href: "#faq" },
