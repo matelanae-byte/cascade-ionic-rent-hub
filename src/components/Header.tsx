@@ -84,9 +84,12 @@ const Header = () => {
             </a>
           ))}
           <a
-            href={headerTexts.ctaHref}
+            href={resolveAnchor(headerTexts.ctaHref)}
             className="inline-flex h-10 px-5 items-center rounded-md bg-primary text-primary-foreground text-sm font-semibold"
-            onClick={() => setMenuOpen(false)}
+            onClick={(e) => {
+              setMenuOpen(false);
+              handleAnchorClick(e, headerTexts.ctaHref);
+            }}
           >
             {headerTexts.ctaLabel}
           </a>
