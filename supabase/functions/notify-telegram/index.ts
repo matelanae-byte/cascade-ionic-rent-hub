@@ -66,7 +66,7 @@ function buildText(payload: any): string {
       rentalTerm ? `• Срок аренды: ${escapeHtml(rentalTerm)}` : "",
     ].filter(Boolean).join("\n");
     return [
-      `🧾 <b>Новая заявка</b>${orderId ? ` №${escapeHtml(String(orderId).slice(0, 8))}` : ""}`,
+      `🧾 <b>Новая ЗАЯВКА с сайта</b> (сохранена в админке)${orderId ? ` №${escapeHtml(String(orderId).slice(0, 8))}` : ""}`,
       `<b>Имя:</b> ${safeName}`,
       `<b>Телефон:</b> ${safePhone}`,
       city ? `<b>Город:</b> ${escapeHtml(city)}` : "",
