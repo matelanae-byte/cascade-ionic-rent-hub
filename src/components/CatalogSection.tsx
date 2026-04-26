@@ -67,7 +67,7 @@ const CatalogSection = () => {
             const Icon = iconMap[p.iconName] || Package;
             // First 3 cards are visible above the fold on mobile — load eagerly.
             const isAboveFold = idx < 3;
-            const optimizedSrc = transformedImage(p.image, 720);
+            const optimizedSrc = transformedImage(p.image, 480);
             const srcSet = buildSrcSet(p.image);
             return (
               <article
