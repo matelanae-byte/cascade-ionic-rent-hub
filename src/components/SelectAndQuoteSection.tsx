@@ -40,6 +40,11 @@ const SelectAndQuoteSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!agreed) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
+
     const orderItems = items.map((item) => ({
       id: item.id,
       name: item.name,
