@@ -127,11 +127,14 @@ export type Database = {
           icon_name: string
           id: string
           image: string | null
+          includes: string
           name: string
           price_day: number
           price_month: number
           price_week: number
+          purpose: string
           sort_order: number
+          spec: string
           updated_at: string
         }
         Insert: {
@@ -142,11 +145,14 @@ export type Database = {
           icon_name?: string
           id?: string
           image?: string | null
+          includes?: string
           name: string
           price_day?: number
           price_month?: number
           price_week?: number
+          purpose?: string
           sort_order?: number
+          spec?: string
           updated_at?: string
         }
         Update: {
@@ -157,11 +163,14 @@ export type Database = {
           icon_name?: string
           id?: string
           image?: string | null
+          includes?: string
           name?: string
           price_day?: number
           price_month?: number
           price_week?: number
+          purpose?: string
           sort_order?: number
+          spec?: string
           updated_at?: string
         }
         Relationships: []
