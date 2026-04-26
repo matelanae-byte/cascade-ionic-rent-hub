@@ -295,9 +295,15 @@ const DashboardTab = () => {
 
 /* ─── Orders Tab ─── */
 const OrdersTab = () => {
-  const { orders, updateStatus } = useOrders();
+  const { orders, updateStatus, deleteOrder } = useOrders();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = selectedId ? orders.find((o) => o.id === selectedId) ?? null : null;
+
+  const handleDelete = async (id: string) => {
+    await deleteOrder(id);
+    if (selectedId === id) setSelectedId(null);
+    toast.success("Заявка удалена");
+  };
 
   return (
     <div className="space-y-4">
