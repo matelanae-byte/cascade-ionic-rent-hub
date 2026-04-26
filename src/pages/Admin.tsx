@@ -529,6 +529,9 @@ const SettingsTab = () => {
 /* ─── Admin Page ─── */
 const Admin = () => {
   const { user, isAdmin, loading, signOut } = useAuth();
+  const [section, setSection] = useState<"clients" | "site">("clients");
+  const [clientsTab, setClientsTab] = useState("orders");
+  const [siteTab, setSiteTab] = useState("dashboard");
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-muted-foreground">Загрузка…</div>;
@@ -562,56 +565,89 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="container py-6">
-        <Tabs defaultValue="dashboard">
-          <TabsList className="mb-6 flex-wrap h-auto">
-            <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
-            <TabsTrigger value="products">Товары</TabsTrigger>
-            <TabsTrigger value="orders">Заявки</TabsTrigger>
-            <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
-            <TabsTrigger value="reviews">Отзывы</TabsTrigger>
-            <TabsTrigger value="hero">Главный экран</TabsTrigger>
-            <TabsTrigger value="sections">Секции главной</TabsTrigger>
-            <TabsTrigger value="header-footer">Шапка и футер</TabsTrigger>
-            <TabsTrigger value="settings">Настройки</TabsTrigger>
-          </TabsList>
+      <main className="container py-6 space-y-6">
+        {/* Главный переключатель разделов */}
+        <div className="inline-flex rounded-lg border bg-card p-1">
+          <button
+            type="button"
+            onClick={() => setSection("clients")}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              section === "clients"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Работа с клиентами
+          </button>
+          <button
+            type="button"
+            onClick={() => setSection("site")}
+            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+              section === "site"
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            Управление сайтом
+          </button>
+        </div>
 
-          <TabsContent value="dashboard">
-            <DashboardTab />
-          </TabsContent>
+        {section === "clients" ? (
+          <Tabs value={clientsTab} onValueChange={setClientsTab}>
+            <TabsList className="mb-6 flex-wrap h-auto">
+              <TabsTrigger value="orders">Заявки</TabsTrigger>
+              <TabsTrigger value="chats" className="gap-1.5"><MessageCircle size={14} /> Чаты</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="products">
-            <ProductsTab />
-          </TabsContent>
+            <TabsContent value="orders">
+              <OrdersTab />
+            </TabsContent>
 
-          <TabsContent value="orders">
-            <OrdersTab />
-          </TabsContent>
+            <TabsContent value="chats">
+              <ChatsTab />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <Tabs value={siteTab} onValueChange={setSiteTab}>
+            <TabsList className="mb-6 flex-wrap h-auto">
+              <TabsTrigger value="dashboard">Дашборд</TabsTrigger>
+              <TabsTrigger value="products">Товары</TabsTrigger>
+              <TabsTrigger value="reviews">Отзывы</TabsTrigger>
+              <TabsTrigger value="hero">Главный экран</TabsTrigger>
+              <TabsTrigger value="sections">Секции главной</TabsTrigger>
+              <TabsTrigger value="header-footer">Шапка и футер</TabsTrigger>
+              <TabsTrigger value="settings">Настройки</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="chats">
-            <ChatsTab />
-          </TabsContent>
+            <TabsContent value="dashboard">
+              <DashboardTab />
+            </TabsContent>
 
-          <TabsContent value="reviews">
-            <ReviewsTab />
-          </TabsContent>
+            <TabsContent value="products">
+              <ProductsTab />
+            </TabsContent>
 
-          <TabsContent value="hero">
-            <HeroTextsTab />
-          </TabsContent>
+            <TabsContent value="reviews">
+              <ReviewsTab />
+            </TabsContent>
 
-          <TabsContent value="sections">
-            <SectionsContentTab />
-          </TabsContent>
+            <TabsContent value="hero">
+              <HeroTextsTab />
+            </TabsContent>
 
-          <TabsContent value="header-footer">
-            <HeaderFooterTab />
-          </TabsContent>
+            <TabsContent value="sections">
+              <SectionsContentTab />
+            </TabsContent>
 
-          <TabsContent value="settings">
-            <SettingsTab />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="header-footer">
+              <HeaderFooterTab />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <SettingsTab />
+            </TabsContent>
+          </Tabs>
+        )}
       </main>
     </div>
   );
