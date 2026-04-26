@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import type { RentalPeriod } from "./CartContext";
 
 export type OrderStatus = "new" | "in_progress" | "delivered" | "cancelled";
@@ -92,6 +93,21 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchOrders();
+
+    const channel = supabase
+      .channel("orders-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "orders" },
+        () => {
+          fetchOrders();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchOrders]);
 
   const addOrder = useCallback(async (order: Omit<Order, "id" | "createdAt" | "processed" | "status">) => {
@@ -114,6 +130,10 @@ export const OrdersProvider = ({ children }: { children: ReactNode }) => {
       .single();
     if (error) {
       console.error("Failed to insert order:", error);
+      toast.error("Не удалось сохранить заявку", {
+        description: error.message ?? "Попробуйте ещё раз или свяжитесь с нами по телефону",
+      });
+      return;
     } else if (data) {
       supabase.functions
         .invoke("notify-telegram", {
