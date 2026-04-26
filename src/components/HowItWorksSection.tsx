@@ -10,8 +10,8 @@ const steps = [
 const HowItWorksSection = () => {
   return (
     <section id="how-it-works" className="py-16 md:py-24 bg-foreground text-background">
-      <div className="container">
-        <div className="mb-12 max-w-2xl">
+      <div className="container max-w-3xl">
+        <div className="mb-12">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Процесс</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Как это работает по России</h2>
           <p className="mt-4 text-base text-background/60">
