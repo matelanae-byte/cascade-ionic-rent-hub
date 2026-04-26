@@ -108,33 +108,35 @@ const CatalogSection = () => {
                   </h3>
 
                   {/* 3. Для какой задачи подходит */}
-                  {p.purpose && (
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2 min-h-[2.7rem]">
-                      {p.purpose}
-                    </p>
-                  )}
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2 min-h-[2.7rem]">
+                    {p.purpose || "\u00A0"}
+                  </p>
 
                   {/* 4. Высота / характеристики */}
-                  {p.spec && (
-                    <div className="mt-4 flex items-start gap-2 text-xs text-foreground/80">
-                      <Ruler size={14} className="mt-0.5 text-primary shrink-0" />
-                      <span className="leading-snug">{p.spec}</span>
-                    </div>
-                  )}
+                  <div className="mt-4 flex items-start gap-2 text-xs text-foreground/80 min-h-[2.5rem]">
+                    {p.spec ? (
+                      <>
+                        <Ruler size={14} className="mt-0.5 text-primary shrink-0" />
+                        <span className="leading-snug line-clamp-2">{p.spec}</span>
+                      </>
+                    ) : null}
+                  </div>
 
                   {/* 5. Что входит в аренду */}
-                  {p.includes && (
-                    <div className="mt-2 flex items-start gap-2 text-xs text-muted-foreground">
-                      <Wrench size={14} className="mt-0.5 text-primary shrink-0" />
-                      <span className="leading-snug">
-                        <span className="text-foreground/70 font-medium">В аренду: </span>
-                        {p.includes}
-                      </span>
-                    </div>
-                  )}
+                  <div className="mt-2 flex items-start gap-2 text-xs text-muted-foreground min-h-[2.5rem]">
+                    {p.includes ? (
+                      <>
+                        <Wrench size={14} className="mt-0.5 text-primary shrink-0" />
+                        <span className="leading-snug line-clamp-2">
+                          <span className="text-foreground/70 font-medium">В аренду: </span>
+                          {p.includes}
+                        </span>
+                      </>
+                    ) : null}
+                  </div>
 
                   {/* 6. Цены — день / неделя / месяц */}
-                  <div className="mt-5 pt-5 border-t border-border space-y-2">
+                  <div className="mt-auto pt-5 border-t border-border space-y-2">
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs text-muted-foreground">Аренда от</span>
                       <span className="text-lg font-bold text-foreground">
