@@ -50,7 +50,8 @@ const Header = () => {
 
         <div className="hidden md:flex items-center gap-3">
           <a
-            href={headerTexts.ctaHref}
+            href={resolveAnchor(headerTexts.ctaHref)}
+            onClick={(e) => handleAnchorClick(e, headerTexts.ctaHref)}
             className="inline-flex h-10 px-5 items-center rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap"
           >
             {headerTexts.ctaLabel}
