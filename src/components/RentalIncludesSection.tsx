@@ -26,8 +26,8 @@ const items = [
 const RentalIncludesSection = () => {
   return (
     <section className="py-20 md:py-28 bg-[hsl(var(--footer-bg))] text-white">
-      <div className="container max-w-3xl">
-        <div className="mb-14">
+      <div className="container">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Комплект</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Что входит в аренду</h2>
           <p className="mt-4 text-base text-white/60">

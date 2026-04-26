@@ -11,9 +11,8 @@ const FAQSection = () => {
   return (
     <section id="faq" className="py-16 md:py-24 bg-background">
       <div className="container max-w-3xl">
-        <div className="mb-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">FAQ</p>
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{faqTexts.title}</h2>
+        <div className="text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground">{faqTexts.title}</h2>
         </div>
 
         <Accordion type="single" collapsible className="space-y-2">
