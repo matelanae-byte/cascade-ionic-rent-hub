@@ -79,18 +79,31 @@ const HeroSection = () => {
               </p>
             </div>
 
-            {/* Badges */}
-            <div className="flex flex-wrap gap-2">
-              {badges.filter((b) => b.text?.trim()).map((b) => (
-                <div
-                  key={b.text}
-                  className="flex items-center gap-2 rounded-md bg-muted/70 px-3.5 py-2 text-sm font-medium text-foreground/80"
-                >
-                  <b.icon size={16} className="text-primary shrink-0" />
-                  {b.text}
-                </div>
-              ))}
+            {/* CTA buttons */}
+            <div className="flex flex-wrap gap-3">
+              <Button asChild size="lg" className="h-12 px-6 gap-2 font-semibold">
+                <a href="#hero-form">
+                  Рассчитать аренду <ArrowRight size={18} />
+                </a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="h-12 px-6 font-semibold">
+                <a href="#catalog">Смотреть каталог</a>
+              </Button>
             </div>
+
+            {/* Benefits checklist */}
+            {benefits.length > 0 && (
+              <ul className="space-y-2.5 pt-2">
+                {benefits.map((text) => (
+                  <li key={text} className="flex items-start gap-3 text-sm md:text-base text-foreground/85">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Check size={13} strokeWidth={3} />
+                    </span>
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {/* Form */}
             <form
