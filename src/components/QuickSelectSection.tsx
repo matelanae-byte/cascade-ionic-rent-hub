@@ -60,7 +60,7 @@ const QuickSelectSection = () => {
               <Input placeholder="Ваш город" value={city} onChange={(e) => setCity(e.target.value)} />
             </div>
           </div>
-          <Button type="submit" className="w-full md:w-auto gap-2 font-semibold">
+          <Button type="submit" className="w-full md:w-auto h-11 px-6 gap-2 font-semibold">
             Подобрать оборудование <ArrowRight size={16} />
           </Button>
         </form>
