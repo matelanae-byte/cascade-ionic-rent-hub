@@ -13,23 +13,23 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;");
 }
 
-async function sendTelegram(text: string): Promise<{ ok: boolean; error?: string }> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  const TELEGRAM_API_KEY = Deno.env.get("TELEGRAM_API_KEY");
-  const CHAT_ID = Deno.env.get("TELEGRAM_ADMIN_CHAT_ID");
-  if (!LOVABLE_API_KEY) return { ok: false, error: "LOVABLE_API_KEY missing" };
-  if (!TELEGRAM_API_KEY) return { ok: false, error: "TELEGRAM_API_KEY missing" };
-  if (!CHAT_ID) return { ok: false, error: "TELEGRAM_ADMIN_CHAT_ID missing" };
+const DEFAULT_GROUP_CHAT_ID = "-5198727505";
 
+async function sendToChat(
+  chatId: string,
+  text: string,
+  lovableKey: string,
+  telegramKey: string,
+): Promise<{ ok: boolean; error?: string }> {
   const resp = await fetch(`${GATEWAY_URL}/sendMessage`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${LOVABLE_API_KEY}`,
-      "X-Connection-Api-Key": TELEGRAM_API_KEY,
+      Authorization: `Bearer ${lovableKey}`,
+      "X-Connection-Api-Key": telegramKey,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      chat_id: CHAT_ID,
+      chat_id: chatId,
       text,
       parse_mode: "HTML",
       disable_web_page_preview: true,
@@ -37,10 +37,31 @@ async function sendTelegram(text: string): Promise<{ ok: boolean; error?: string
   });
   if (!resp.ok) {
     const t = await resp.text();
-    console.error("Telegram error", resp.status, t);
-    return { ok: false, error: `${resp.status}: ${t}` };
+    console.error("Telegram error", chatId, resp.status, t);
+    return { ok: false, error: `${chatId} -> ${resp.status}: ${t}` };
   }
   return { ok: true };
+}
+
+async function sendTelegram(text: string): Promise<{ ok: boolean; error?: string; results?: any[] }> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  const TELEGRAM_API_KEY = Deno.env.get("TELEGRAM_API_KEY");
+  const ADMIN_CHAT_ID = Deno.env.get("TELEGRAM_ADMIN_CHAT_ID");
+  const GROUP_CHAT_ID = Deno.env.get("TELEGRAM_GROUP_CHAT_ID") || DEFAULT_GROUP_CHAT_ID;
+  if (!LOVABLE_API_KEY) return { ok: false, error: "LOVABLE_API_KEY missing" };
+  if (!TELEGRAM_API_KEY) return { ok: false, error: "TELEGRAM_API_KEY missing" };
+
+  const targets = [ADMIN_CHAT_ID, GROUP_CHAT_ID].filter(
+    (v, i, a): v is string => !!v && a.indexOf(v) === i,
+  );
+  if (targets.length === 0) return { ok: false, error: "no chat ids configured" };
+
+  const results = await Promise.all(
+    targets.map((id) => sendToChat(id, text, LOVABLE_API_KEY, TELEGRAM_API_KEY)),
+  );
+  const anyOk = results.some((r) => r.ok);
+  const errors = results.filter((r) => !r.ok).map((r) => r.error).join("; ");
+  return { ok: anyOk, error: errors || undefined, results };
 }
 
 function buildText(payload: any): string {
