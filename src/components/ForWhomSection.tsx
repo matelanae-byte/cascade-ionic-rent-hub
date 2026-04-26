@@ -7,8 +7,8 @@ const ForWhomSection = () => {
   const { forWhomTexts } = useSiteSettings();
   return (
     <section className="py-20 md:py-28 bg-background">
-      <div className="container">
-        <div className="text-center mb-14 max-w-2xl mx-auto">
+      <div className="container max-w-3xl">
+        <div className="text-left mb-14">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Для кого</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{forWhomTexts.title}</h2>
           {forWhomTexts.subtitle && (
@@ -16,7 +16,7 @@ const ForWhomSection = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {forWhomTexts.items.map((item, i) => {
             const Icon = icons[i] ?? Building2;
             return (
