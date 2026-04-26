@@ -42,16 +42,20 @@ const CatalogSection = () => {
                 key={p.id}
                 className="group flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-primary/20 hover:shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.18)]"
               >
-                {/* 1. Image — uniform 4:3 */}
-                <div className="relative w-full aspect-[4/3] bg-muted overflow-hidden">
+                {/* 1. Image — always visible, fixed height on mobile, aspect ratio on larger screens */}
+                <div
+                  className="relative w-full bg-muted overflow-hidden shrink-0 block h-56 sm:h-auto sm:aspect-[4/3]"
+                >
                   {p.image ? (
                     <img
                       src={p.image}
                       alt={p.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      loading="eager"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center">
                       <Icon size={44} className="text-muted-foreground/30" />
                     </div>
                   )}
