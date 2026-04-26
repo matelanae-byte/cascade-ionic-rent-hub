@@ -8,6 +8,9 @@ export interface Product {
   iconName: string;
   name: string;
   desc: string;
+  purpose: string;
+  spec: string;
+  includes: string;
   prices: { day: number; week: number; month: number };
   hidden: boolean;
   order: number;
