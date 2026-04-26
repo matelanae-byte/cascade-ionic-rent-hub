@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Package } from "lucide-react";
+import { Send, Package } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts, iconMap } from "@/contexts/ProductsContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
@@ -15,7 +15,10 @@ const CatalogSection = () => {
 
   const handleAdd = (p: Product) => {
     addItem({ id: p.id, name: p.name, prices: p.prices });
-    toast.success(`${p.name} добавлен в корзину`);
+    toast.success(`${p.name} добавлен в заявку`);
+    setTimeout(() => {
+      document.getElementById("hero-form")?.scrollIntoView({ behavior: "smooth" });
+    }, 150);
   };
 
   return (
@@ -65,8 +68,8 @@ const CatalogSection = () => {
                     </div>
                   </div>
                   <Button onClick={() => handleAdd(p)} className="w-full font-semibold gap-2">
-                    <ShoppingCart size={16} />
-                    В корзину
+                    <Send size={16} />
+                    Оставить заявку
                   </Button>
                 </div>
               </div>
