@@ -8,6 +8,9 @@ export interface Product {
   iconName: string;
   name: string;
   desc: string;
+  purpose: string;
+  spec: string;
+  includes: string;
   prices: { day: number; week: number; month: number };
   hidden: boolean;
   order: number;
@@ -47,6 +50,9 @@ const rowToProduct = (r: any): Product => ({
   iconName: r.icon_name,
   name: r.name,
   desc: r.description ?? "",
+  purpose: r.purpose ?? "",
+  spec: r.spec ?? "",
+  includes: r.includes ?? "",
   prices: { day: Number(r.price_day), week: Number(r.price_week), month: Number(r.price_month) },
   hidden: !!r.hidden,
   order: r.sort_order ?? 0,
@@ -58,6 +64,9 @@ type ProductRow = {
   icon_name?: string;
   name?: string;
   description?: string;
+  purpose?: string;
+  spec?: string;
+  includes?: string;
   price_day?: number;
   price_week?: number;
   price_month?: number;
@@ -72,6 +81,9 @@ const productToRow = (p: Partial<Product>): ProductRow => {
   if (p.iconName !== undefined) row.icon_name = p.iconName;
   if (p.name !== undefined) row.name = p.name;
   if (p.desc !== undefined) row.description = p.desc;
+  if (p.purpose !== undefined) row.purpose = p.purpose;
+  if (p.spec !== undefined) row.spec = p.spec;
+  if (p.includes !== undefined) row.includes = p.includes;
   if (p.prices !== undefined) {
     row.price_day = p.prices.day;
     row.price_week = p.prices.week;

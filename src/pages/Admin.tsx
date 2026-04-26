@@ -36,6 +36,9 @@ const iconOptions = Object.keys(iconMap);
 const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
   const [name, setName] = useState(initial?.name ?? "");
   const [desc, setDesc] = useState(initial?.desc ?? "");
+  const [purpose, setPurpose] = useState(initial?.purpose ?? "");
+  const [spec, setSpec] = useState(initial?.spec ?? "");
+  const [includes, setIncludes] = useState(initial?.includes ?? "");
   const [category, setCategory] = useState(initial?.category ?? "");
   const [iconName, setIconName] = useState(initial?.iconName ?? "Package");
   const [dayPrice, setDayPrice] = useState(String(initial?.prices.day ?? ""));
@@ -57,6 +60,9 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
     onSave({
       name,
       desc,
+      purpose,
+      spec,
+      includes,
       category,
       iconName,
       prices: { day: Number(dayPrice) || 0, week: Number(weekPrice) || 0, month: Number(monthPrice) || 0 },
@@ -81,6 +87,26 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-foreground">Описание</label>
         <Textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={3} />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Описание (короткое, для какой задачи подходит)</label>
+        <Textarea value={desc} onChange={(e) => setDesc(e.target.value)} rows={2} placeholder="Базовое описание товара" />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Назначение</label>
+        <Input value={purpose} onChange={(e) => setPurpose(e.target.value)} placeholder="Например: Мойка фасадов и окон с земли" />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Высота / характеристики</label>
+        <Input value={spec} onChange={(e) => setSpec(e.target.value)} placeholder="Например: Рабочая высота: до 15 м · карбон" />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium text-foreground">Что входит в аренду</label>
+        <Textarea value={includes} onChange={(e) => setIncludes(e.target.value)} rows={2} placeholder="Например: Станция, штанга 15 м, набор щёток, шланг" />
       </div>
 
       <div className="space-y-1.5">
