@@ -8,6 +8,26 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { headerTexts } = useSiteSettings();
 
+  // Resolve CTA href: if it's an anchor that doesn't exist on the page,
+  // fall back to #lead-form (the unified quote form).
+  const resolveAnchor = (href: string) => {
+    if (!href?.startsWith("#") || href === "#") return "#lead-form";
+    if (typeof document !== "undefined" && !document.getElementById(href.slice(1))) {
+      return "#lead-form";
+    }
+    return href;
+  };
+
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const target = resolveAnchor(href);
+    if (!target.startsWith("#")) return;
+    const el = document.getElementById(target.slice(1));
+    if (el) {
+      e.preventDefault();
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-b border-border">
       <div className="container flex h-16 md:h-20 items-center justify-between gap-4">
