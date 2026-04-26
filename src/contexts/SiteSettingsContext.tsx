@@ -325,8 +325,10 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         if (row.key === KEY_FAQ) next.faqTexts = safeParse(row.value, DEFAULT_FAQ_TEXTS);
         if (row.key === KEY_HEADER) {
           const h = safeParse(row.value, DEFAULT_HEADER_TEXTS);
-          const links = (Array.isArray(h.links) ? h.links : DEFAULT_HEADER_TEXTS.links)
-            .filter((l) => l.href !== "#reviews");
+          const rawLinks = Array.isArray(h.links) ? h.links : DEFAULT_HEADER_TEXTS.links;
+          const links = rawLinks.filter(
+            (l) => l.href !== "#reviews" && l.label.trim().toLowerCase() !== "отзывы",
+          );
           links.push({ label: "Отзывы", href: "#reviews" });
           next.headerTexts = { ...h, links };
         }
