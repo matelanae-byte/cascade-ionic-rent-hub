@@ -17,7 +17,7 @@ const CatalogSection = () => {
     addItem({ id: p.id, name: p.name, prices: p.prices });
     toast.success(`${p.name} добавлен в заявку`);
     setTimeout(() => {
-      document.getElementById("hero-form")?.scrollIntoView({ behavior: "smooth" });
+      document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth" });
     }, 150);
   };
 

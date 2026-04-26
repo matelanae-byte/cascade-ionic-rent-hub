@@ -111,7 +111,7 @@ const CartDrawer = () => {
                   onClick={() => {
                     setOpen(false);
                     setTimeout(() => {
-                      document.getElementById("hero-form")?.scrollIntoView({ behavior: "smooth" });
+                      document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth" });
                     }, 300);
                   }}
                 >
