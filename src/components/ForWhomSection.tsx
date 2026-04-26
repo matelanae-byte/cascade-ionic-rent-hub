@@ -8,7 +8,7 @@ const ForWhomSection = () => {
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="text-center mb-14 max-w-2xl mx-auto">
+        <div className="text-left mb-14 max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Для кого</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">{forWhomTexts.title}</h2>
           {forWhomTexts.subtitle && (
