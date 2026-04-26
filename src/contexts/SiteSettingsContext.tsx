@@ -323,7 +323,17 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
         if (row.key === KEY_FOR_WHOM) next.forWhomTexts = safeParse(row.value, DEFAULT_FOR_WHOM_TEXTS);
         if (row.key === KEY_WHY_US) next.whyUsTexts = safeParse(row.value, DEFAULT_WHY_US_TEXTS);
         if (row.key === KEY_FAQ) next.faqTexts = safeParse(row.value, DEFAULT_FAQ_TEXTS);
-        if (row.key === KEY_HEADER) next.headerTexts = safeParse(row.value, DEFAULT_HEADER_TEXTS);
+        if (row.key === KEY_HEADER) {
+          const h = safeParse(row.value, DEFAULT_HEADER_TEXTS);
+          const links = Array.isArray(h.links) ? h.links : DEFAULT_HEADER_TEXTS.links;
+          if (!links.some((l) => l.href === "#reviews")) {
+            const idx = links.findIndex((l) => l.href === "#faq");
+            const reviewsLink = { label: "Отзывы", href: "#reviews" };
+            if (idx >= 0) links.splice(idx, 0, reviewsLink);
+            else links.push(reviewsLink);
+          }
+          next.headerTexts = { ...h, links };
+        }
         if (row.key === KEY_FOOTER) {
           const f = safeParse(row.value, DEFAULT_FOOTER_TEXTS);
           next.footerTexts = { ...f, socials: { ...DEFAULT_FOOTER_TEXTS.socials, ...(f.socials ?? {}) } };
