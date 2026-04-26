@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Ruler, CalendarDays, ShieldCheck, ShoppingCart } from "lucide-react";
+import { ArrowRight, Check, ShoppingCart } from "lucide-react";
 import { useCart, type RentalPeriod } from "@/contexts/CartContext";
 import { useOrders } from "@/contexts/OrdersContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
