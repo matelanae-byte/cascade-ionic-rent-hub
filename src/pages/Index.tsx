@@ -12,6 +12,7 @@ const CatalogSection = lazy(() => import("@/components/CatalogSection"));
 const RentalIncludesSection = lazy(() => import("@/components/RentalIncludesSection"));
 const SelectAndQuoteSection = lazy(() => import("@/components/SelectAndQuoteSection"));
 const FAQSection = lazy(() => import("@/components/FAQSection"));
+const ReviewsSection = lazy(() => import("@/components/ReviewsSection"));
 
 const SectionFallback = () => (
   <div className="py-20 md:py-28">
@@ -34,6 +35,7 @@ const Index = () => {
           <CatalogSection />
           <RentalIncludesSection />
           <SelectAndQuoteSection />
+          <ReviewsSection />
           <FAQSection />
         </Suspense>
       </main>
