@@ -28,11 +28,11 @@ const Footer = () => {
   const { socials } = footerTexts;
 
   const socialClass =
-    "inline-flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-white/20 text-white/70 transition-all hover:ring-white/50 hover:text-white hover:scale-105";
+    "inline-flex h-9 w-9 items-center justify-center rounded-full ring-1 ring-white/15 text-white/65 transition-all hover:ring-secondary/60 hover:text-white hover:scale-105";
 
   return (
     <footer id="contacts" className="bg-footer-bg text-white">
-      <div className="container py-12 md:py-16">
+      <div className="container py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Brand */}
           <div className="space-y-4 max-w-sm">

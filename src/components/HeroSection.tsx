@@ -67,30 +67,30 @@ const HeroSection = () => {
 
   return (
     <section className="relative overflow-hidden bg-background">
-      <div className="container py-16 md:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="container py-20 md:py-32">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left — offer + form */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-widest text-primary">
+          <div className="space-y-10">
+            <div className="space-y-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
                 {heroTexts.eyebrow}
               </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-foreground">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.1] tracking-tight text-foreground">
                 {heroTexts.title}
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-lg">
                 {heroTexts.subtitle}
               </p>
             </div>
 
             {/* Badges */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               {badges.filter((b) => b.text?.trim()).map((b) => (
                 <div
                   key={b.text}
-                  className="flex items-center gap-2 rounded-md border bg-card px-4 py-2.5 text-sm font-medium text-foreground shadow-sm"
+                  className="flex items-center gap-2 rounded-md bg-muted/70 px-3.5 py-2 text-sm font-medium text-foreground/80"
                 >
-                  <b.icon size={18} className="text-primary shrink-0" />
+                  <b.icon size={16} className="text-primary shrink-0" />
                   {b.text}
                 </div>
               ))}
@@ -100,13 +100,13 @@ const HeroSection = () => {
             <form
               id="hero-form"
               onSubmit={handleSubmit}
-              className="rounded-lg border bg-card p-6 shadow-sm space-y-4 max-w-md"
+              className="rounded-xl border border-border bg-card p-6 md:p-7 shadow-[0_2px_24px_-12px_hsl(var(--primary)/0.25)] space-y-4 max-w-md"
             >
-              <p className="text-sm font-semibold text-foreground">{heroTexts.formTitle}</p>
+              <p className="text-base font-semibold text-foreground">{heroTexts.formTitle}</p>
 
               {/* Cart summary */}
               {items.length > 0 && (
-                <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+                <div className="rounded-md border border-primary/15 bg-primary/[0.04] p-3 space-y-2">
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                     <ShoppingCart size={16} className="text-primary" />
                     Товары в заявке
@@ -133,7 +133,7 @@ const HeroSection = () => {
               <Input placeholder="Имя" value={name} onChange={(e) => setName(e.target.value)} required />
               <Input placeholder="Телефон" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} required />
               <Input placeholder="Город" value={city} onChange={(e) => setCity(e.target.value)} required />
-              <Button type="submit" className="w-full gap-2 font-semibold">
+              <Button type="submit" className="w-full h-11 gap-2 font-semibold">
                 {items.length > 0 ? heroTexts.submitLabelWithCart : heroTexts.submitLabel} <ArrowRight size={16} />
               </Button>
               <p className="text-xs text-muted-foreground">
@@ -150,10 +150,10 @@ const HeroSection = () => {
               <img
                 src={heroImageUrl}
                 alt="WFP оборудование для мойки фасадов"
-                className="w-full max-w-md rounded-lg object-cover aspect-[4/5] shadow-md"
+                className="w-full max-w-md rounded-xl object-cover aspect-[4/5] shadow-[0_20px_60px_-20px_hsl(var(--primary)/0.35)]"
               />
             ) : (
-              <div className="relative w-full aspect-[4/5] max-w-md rounded-lg bg-muted border-2 border-dashed border-border flex flex-col items-center justify-center text-center p-8">
+              <div className="relative w-full aspect-[4/5] max-w-md rounded-xl bg-muted border border-border flex flex-col items-center justify-center text-center p-8">
                 <div className="text-6xl mb-4">🏗️</div>
                 <p className="text-sm font-medium text-muted-foreground">
                   Загрузите фото в&nbsp;админке<br />Настройки → Hero-изображение

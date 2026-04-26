@@ -15,16 +15,17 @@ const QuickSelectSection = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 bg-card">
+    <section className="py-20 md:py-28 bg-background">
       <div className="container max-w-3xl">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">Быстрый подбор</h2>
-          <p className="mt-3 text-muted-foreground">
+        <div className="text-center mb-12 max-w-2xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Подбор</p>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Быстрый подбор</h2>
+          <p className="mt-4 text-base text-muted-foreground">
             Ответьте на 3 вопроса — мы подберём оптимальный комплект
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-lg border bg-background p-6 md:p-8 shadow-sm space-y-5">
+        <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-card p-6 md:p-8 shadow-[0_2px_24px_-12px_hsl(var(--primary)/0.15)] space-y-5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">Тип задачи</label>
@@ -59,7 +60,7 @@ const QuickSelectSection = () => {
               <Input placeholder="Ваш город" value={city} onChange={(e) => setCity(e.target.value)} />
             </div>
           </div>
-          <Button type="submit" className="w-full md:w-auto gap-2 font-semibold">
+          <Button type="submit" className="w-full md:w-auto h-11 px-6 gap-2 font-semibold">
             Подобрать оборудование <ArrowRight size={16} />
           </Button>
         </form>

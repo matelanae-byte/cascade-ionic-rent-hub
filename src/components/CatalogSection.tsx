@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Send, Package } from "lucide-react";
+import { ArrowRight, Package } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts, iconMap } from "@/contexts/ProductsContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
@@ -22,57 +22,82 @@ const CatalogSection = () => {
   };
 
   return (
-    <section id="catalog" className="py-16 md:py-24 bg-background">
+    <section id="catalog" className="py-20 md:py-28 bg-background">
       <div className="container">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-3xl font-bold text-foreground">{catalogTexts.title}</h2>
-          <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">{catalogTexts.subtitle}</p>
+        <div className="text-center mb-14 max-w-2xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">
+            Каталог
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+            {catalogTexts.title}
+          </h2>
+          <p className="mt-4 text-base text-muted-foreground">{catalogTexts.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {visibleProducts.map((p) => {
             const Icon = iconMap[p.iconName] || Package;
             return (
-              <div
+              <article
                 key={p.id}
-                className="group rounded-lg border bg-card p-6 flex flex-col justify-between hover:shadow-lg transition-shadow"
+                className="group flex flex-col h-full rounded-xl border border-border bg-card overflow-hidden transition-all hover:border-primary/20 hover:shadow-[0_8px_30px_-10px_hsl(var(--primary)/0.18)]"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-primary">{p.category}</span>
-                  </div>
-                  <div className="w-full aspect-[3/2] rounded-md bg-muted flex items-center justify-center overflow-hidden">
-                    {p.image ? (
-                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <Icon size={40} className="text-muted-foreground/40" />
-                    )}
-                  </div>
-                  <h3 className="font-semibold text-foreground leading-snug">{p.name}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                {/* Image — uniform 4:3 */}
+                <div className="relative w-full aspect-[4/3] bg-muted overflow-hidden">
+                  {p.image ? (
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Icon size={44} className="text-muted-foreground/30" />
+                    </div>
+                  )}
                 </div>
 
-                <div className="mt-6 space-y-4">
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-md bg-muted p-2">
-                      <p className="text-xs text-muted-foreground">День</p>
-                      <p className="text-sm font-bold text-foreground">{formatPrice(p.prices.day)}</p>
+                {/* Body */}
+                <div className="flex flex-col flex-1 p-6">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-secondary mb-3">
+                    {p.category}
+                  </p>
+                  <h3 className="text-base font-semibold text-foreground leading-snug line-clamp-2 min-h-[3rem]">
+                    {p.name}
+                  </h3>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3 min-h-[4.05rem]">
+                    {p.desc}
+                  </p>
+
+                  {/* Pricing — clean, no marketplace highlight */}
+                  <div className="mt-5 pt-5 border-t border-border space-y-2">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs text-muted-foreground">Аренда от</span>
+                      <span className="text-lg font-bold text-foreground">
+                        {formatPrice(p.prices.day)}
+                        <span className="text-xs font-normal text-muted-foreground">/день</span>
+                      </span>
                     </div>
-                    <div className="rounded-md bg-muted p-2">
-                      <p className="text-xs text-muted-foreground">Неделя</p>
-                      <p className="text-sm font-bold text-foreground">{formatPrice(p.prices.week)}</p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Неделя</span>
+                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.week)}</span>
                     </div>
-                    <div className="rounded-md bg-primary/10 p-2 ring-1 ring-primary/20">
-                      <p className="text-xs text-primary">Месяц</p>
-                      <p className="text-sm font-bold text-primary">{formatPrice(p.prices.month)}</p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Месяц</span>
+                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.month)}</span>
                     </div>
                   </div>
-                  <Button onClick={() => handleAdd(p)} className="w-full font-semibold gap-2">
-                    <Send size={16} />
+
+                  {/* CTA — pinned bottom */}
+                  <Button
+                    onClick={() => handleAdd(p)}
+                    className="mt-6 w-full h-11 font-semibold gap-2"
+                  >
                     Оставить заявку
+                    <ArrowRight size={16} />
                   </Button>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
