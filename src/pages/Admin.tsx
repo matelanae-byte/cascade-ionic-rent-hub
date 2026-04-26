@@ -353,21 +353,43 @@ const OrdersTab = () => {
                 <div className="flex items-center gap-2"><span className="text-muted-foreground">Статус:</span> <StatusBadge status={selected.status} /></div>
               </div>
 
-              <div>
-                <p className="font-medium mb-2">Состав заказа:</p>
-                <div className="rounded-md border divide-y">
-                  {selected.items.map((item) => (
-                    <div key={item.id} className="px-3 py-2 flex justify-between items-center">
-                      <div>
-                        <span className="font-medium">{item.name}</span>
-                        <span className="text-muted-foreground ml-2">× {item.quantity}</span>
-                        <span className="text-muted-foreground ml-2">({periodLabels[item.period]})</span>
-                      </div>
-                      <span className="font-semibold">{formatPrice(item.price)}</span>
-                    </div>
-                  ))}
+              {(selected.taskType || selected.area || selected.people || selected.height || selected.rentalTerm) && (
+                <div>
+                  <p className="font-medium mb-2">Параметры подбора:</p>
+                  <div className="rounded-md border p-3 space-y-1 text-sm">
+                    {selected.taskType && <div><span className="text-muted-foreground">Тип задачи:</span> <span className="font-medium">{selected.taskType}</span></div>}
+                    {selected.area && <div><span className="text-muted-foreground">Площадь:</span> <span className="font-medium">{selected.area}</span></div>}
+                    {selected.people && <div><span className="text-muted-foreground">Человек:</span> <span className="font-medium">{selected.people}</span></div>}
+                    {selected.height && <div><span className="text-muted-foreground">Высота:</span> <span className="font-medium">{selected.height}</span></div>}
+                    {selected.rentalTerm && <div><span className="text-muted-foreground">Срок аренды:</span> <span className="font-medium">{selected.rentalTerm}</span></div>}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {selected.items.length > 0 && (
+                <div>
+                  <p className="font-medium mb-2">Состав заказа:</p>
+                  <div className="rounded-md border divide-y">
+                    {selected.items.map((item) => (
+                      <div key={item.id} className="px-3 py-2 flex justify-between items-center">
+                        <div>
+                          <span className="font-medium">{item.name}</span>
+                          <span className="text-muted-foreground ml-2">× {item.quantity}</span>
+                          <span className="text-muted-foreground ml-2">({periodLabels[item.period]})</span>
+                        </div>
+                        <span className="font-semibold">{formatPrice(item.price)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selected.comment && (
+                <div>
+                  <p className="font-medium mb-2">Комментарий:</p>
+                  <div className="rounded-md border p-3 text-sm whitespace-pre-wrap">{selected.comment}</div>
+                </div>
+              )}
 
               <div className="flex justify-between items-center pt-2 border-t">
                 <span className="font-semibold">Итого:</span>
