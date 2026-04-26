@@ -17,7 +17,7 @@ const QuickSelectSection = () => {
   return (
     <section className="py-20 md:py-28 bg-background">
       <div className="container max-w-3xl">
-        <div className="text-center mb-12 max-w-2xl mx-auto">
+        <div className="text-left mb-12 max-w-2xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary mb-3">Подбор</p>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">Быстрый подбор</h2>
           <p className="mt-4 text-base text-muted-foreground">

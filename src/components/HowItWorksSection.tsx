@@ -11,9 +11,9 @@ const HowItWorksSection = () => {
   return (
     <section id="how-it-works" className="py-16 md:py-24 bg-foreground text-background">
       <div className="container">
-        <div className="text-center mb-12">
+        <div className="text-left mb-12">
           <h2 className="text-2xl md:text-3xl font-bold">Как это работает по России</h2>
-          <p className="mt-3 text-background/60 max-w-2xl mx-auto">
+          <p className="mt-3 text-background/60 max-w-2xl">
             От заявки до работы на объекте — 4 простых шага
           </p>
         </div>
