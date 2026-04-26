@@ -18,20 +18,21 @@ const formatPrice = (n: number) => n.toLocaleString("ru-RU") + " ₽";
  *   .../object/public/product-images/wfp-kit-10.png
  *      → .../render/image/public/product-images/wfp-kit-10.png?width=600&quality=70
  */
-const transformedImage = (src: string | undefined, width: number, quality = 70): string | undefined => {
+const transformedImage = (src: string | undefined, width: number, quality = 65): string | undefined => {
   if (!src) return src;
   if (!src.includes("/storage/v1/object/public/")) return src;
   const rendered = src.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
   const sep = rendered.includes("?") ? "&" : "?";
-  return `${rendered}${sep}width=${width}&quality=${quality}&resize=cover`;
+  // format=webp drastically reduces size (PNG ~450KB → WebP ~22KB at 480w).
+  return `${rendered}${sep}width=${width}&quality=${quality}&resize=cover&format=webp`;
 };
 
 const buildSrcSet = (src: string | undefined): string | undefined => {
   if (!src || !src.includes("/storage/v1/object/public/")) return undefined;
   return [
-    `${transformedImage(src, 480)} 480w`,
-    `${transformedImage(src, 720)} 720w`,
-    `${transformedImage(src, 1000)} 1000w`,
+    `${transformedImage(src, 400)} 400w`,
+    `${transformedImage(src, 600)} 600w`,
+    `${transformedImage(src, 900)} 900w`,
   ].join(", ");
 };
 
