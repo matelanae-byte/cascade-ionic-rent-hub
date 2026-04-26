@@ -1,14 +1,27 @@
+import { lazy, Suspense } from "react";
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
 import ForWhomSection from "@/components/ForWhomSection";
 import WhyUsSection from "@/components/WhyUsSection";
-import CatalogSection from "@/components/CatalogSection";
-import RentalIncludesSection from "@/components/RentalIncludesSection";
-import QuickSelectSection from "@/components/QuickSelectSection";
-import LeadFormSection from "@/components/LeadFormSection";
-import FAQSection from "@/components/FAQSection";
 import Footer from "@/components/Footer";
+
+// Heavy below-the-fold sections — code-split so the first screen
+// renders fast on mobile without waiting for the catalog/forms/FAQ.
+const CatalogSection = lazy(() => import("@/components/CatalogSection"));
+const RentalIncludesSection = lazy(() => import("@/components/RentalIncludesSection"));
+const QuickSelectSection = lazy(() => import("@/components/QuickSelectSection"));
+const LeadFormSection = lazy(() => import("@/components/LeadFormSection"));
+const FAQSection = lazy(() => import("@/components/FAQSection"));
+
+const SectionFallback = () => (
+  <div className="py-20 md:py-28">
+    <div className="container">
+      <div className="h-6 w-40 mx-auto rounded bg-muted animate-pulse" />
+    </div>
+  </div>
+);
+
 const Index = () => {
   return (
     <div className="min-h-screen flex flex-col">
@@ -18,11 +31,13 @@ const Index = () => {
         <AboutSection />
         <ForWhomSection />
         <WhyUsSection />
-        <CatalogSection />
-        <RentalIncludesSection />
-        <QuickSelectSection />
-        <LeadFormSection />
-        <FAQSection />
+        <Suspense fallback={<SectionFallback />}>
+          <CatalogSection />
+          <RentalIncludesSection />
+          <QuickSelectSection />
+          <LeadFormSection />
+          <FAQSection />
+        </Suspense>
       </main>
       <Footer />
     </div>
