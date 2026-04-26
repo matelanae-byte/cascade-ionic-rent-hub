@@ -23,11 +23,7 @@ const HeroSection = () => {
   const { addOrder } = useOrders();
   const { heroImageUrl, heroTexts } = useSiteSettings();
 
-  const badges = [
-    { icon: Ruler, text: heroTexts.badge1 },
-    { icon: CalendarDays, text: heroTexts.badge2 },
-    { icon: ShieldCheck, text: heroTexts.badge3 },
-  ];
+  const benefits = [heroTexts.badge1, heroTexts.badge2, heroTexts.badge3].filter((b) => b?.trim());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
