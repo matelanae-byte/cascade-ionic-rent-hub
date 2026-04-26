@@ -135,14 +135,22 @@ const CatalogSection = () => {
                     ) : null}
                   </div>
 
-                  {/* 6. Цена */}
-                  <div className="mt-auto pt-5 border-t border-border">
+                  {/* 6. Цены — день / неделя / месяц (информационно) */}
+                  <div className="mt-auto pt-5 border-t border-border space-y-2">
                     <div className="flex items-baseline justify-between">
                       <span className="text-xs text-muted-foreground">Аренда от</span>
                       <span className="text-lg font-bold text-foreground">
                         {formatPrice(p.prices.day)}
                         <span className="text-xs font-normal text-muted-foreground">/день</span>
                       </span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Неделя</span>
+                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.week)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>Месяц</span>
+                      <span className="font-medium text-foreground/80">{formatPrice(p.prices.month)}</span>
                     </div>
                   </div>
 
