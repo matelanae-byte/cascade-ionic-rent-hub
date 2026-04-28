@@ -5,7 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-  base: "/cascade-ionic-rent-hub/",
+  // base "/cascade-ionic-rent-hub/" нужен только для деплоя на GitHub Pages.
+  // В Lovable preview/production и в dev используем корень "/".
+  base: process.env.GITHUB_PAGES === "true" ? "/cascade-ionic-rent-hub/" : "/",
   server: {
     host: "::",
     port: 8080,
