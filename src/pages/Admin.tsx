@@ -284,7 +284,16 @@ const ProductsTab = () => {
             {editing === p.id ? (
               <ProductForm
                 initial={p}
-                onSave={(data) => { updateProduct(p.id, data); setEditing(null); }}
+                onSave={async (data) => {
+                  try {
+                    await updateProduct(p.id, data);
+                    setEditing(null);
+                    toast.success("Товар обновлён");
+                  } catch (err) {
+                    console.error(err);
+                    toast.error("Не удалось сохранить товар");
+                  }
+                }}
                 onCancel={() => setEditing(null)}
               />
             ) : (
