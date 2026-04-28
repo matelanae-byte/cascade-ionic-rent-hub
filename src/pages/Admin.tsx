@@ -31,7 +31,7 @@ const formatPrice = (n: number) => n.toLocaleString("ru-RU") + " ₽";
 /* ─── Product Form ─── */
 interface ProductFormProps {
   initial?: Product;
-  onSave: (data: Omit<Product, "id" | "order">) => void;
+  onSave: (data: Omit<Product, "id" | "order">, pendingFile: File | null) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -49,45 +49,90 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
   const [weekPrice, setWeekPrice] = useState(String(initial?.prices.week ?? ""));
   const [monthPrice, setMonthPrice] = useState(String(initial?.prices.month ?? ""));
   const [hidden, setHidden] = useState(initial?.hidden ?? false);
-  const [image, setImage] = useState(initial?.image ?? "");
+
+  // Для редактирования — конечный URL из Storage. Для нового товара —
+  // временный data:URL для превью, реальный файл лежит в pendingFile.
+  const [image, setImage] = useState<string>(initial?.image ?? "");
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
 
   const [imageBusy, setImageBusy] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
     setImageBusy(true);
     try {
-      // Карточки товара показываются ~600px шириной → 900px с запасом для retina
-      const dataUrl = await compressImageToDataUrl(file, {
-        maxWidth: 900,
-        quality: 0.78,
-        mimeType: "image/webp",
-      });
-      setImage(dataUrl);
+      if (initial?.id) {
+        // Редактирование существующего товара — сразу в Storage
+        const url = await uploadProductImage(initial.id, file);
+        setImage(url);
+        setPendingFile(null);
+      } else {
+        // Новый товар — превью локально, файл загрузим после создания
+        const previewUrl = await compressImageToDataUrl(file, {
+          maxWidth: 900,
+          quality: 0.78,
+          mimeType: "image/webp",
+        });
+        setImage(previewUrl);
+        setPendingFile(file);
+      }
     } catch (err) {
-      toast.error("Не удалось обработать изображение");
       console.error(err);
+      toast.error("Не удалось загрузить изображение");
     } finally {
       setImageBusy(false);
-      e.target.value = "";
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRemoveImage = async () => {
+    setImageBusy(true);
+    try {
+      if (initial?.id && image && !image.startsWith("data:")) {
+        await deleteProductImage(initial.id);
+      }
+      setImage("");
+      setPendingFile(null);
+    } catch (err) {
+      console.error(err);
+      toast.error("Не удалось удалить изображение");
+    } finally {
+      setImageBusy(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      name,
-      desc,
-      purpose,
-      spec,
-      includes,
-      category,
-      iconName,
-      prices: { day: Number(dayPrice) || 0, week: Number(weekPrice) || 0, month: Number(monthPrice) || 0 },
-      hidden,
-      image: image || undefined,
-    });
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      // Для новых товаров image передаём как undefined — он подтянется позже
+      // через uploadProductImage. Для редактирования передаём текущий URL.
+      const finalImage = initial?.id ? image || undefined : undefined;
+      await onSave(
+        {
+          name,
+          desc,
+          purpose,
+          spec,
+          includes,
+          category,
+          iconName,
+          prices: {
+            day: Number(dayPrice) || 0,
+            week: Number(weekPrice) || 0,
+            month: Number(monthPrice) || 0,
+          },
+          hidden,
+          image: finalImage,
+        },
+        pendingFile,
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -130,9 +175,31 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-foreground">Фото товара</label>
-        <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageBusy} />
-        {imageBusy && <p className="text-xs text-muted-foreground">Сжимаем изображение…</p>}
-        {image && !imageBusy && <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />}
+        <div className="flex flex-wrap items-start gap-3">
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            disabled={imageBusy || submitting}
+            className="max-w-xs"
+          />
+          {image && !imageBusy && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleRemoveImage}
+              disabled={imageBusy || submitting}
+              className="gap-1.5"
+            >
+              <Trash2 size={14} /> Удалить фото
+            </Button>
+          )}
+        </div>
+        {imageBusy && <p className="text-xs text-muted-foreground">Обрабатываем изображение…</p>}
+        {image && !imageBusy && (
+          <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
@@ -165,8 +232,12 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
       </div>
 
       <div className="flex gap-2 pt-2">
-        <Button type="submit" className="gap-1.5"><Check size={16} /> Сохранить</Button>
-        <Button type="button" variant="outline" onClick={onCancel} className="gap-1.5"><X size={16} /> Отмена</Button>
+        <Button type="submit" disabled={submitting || imageBusy} className="gap-1.5">
+          <Check size={16} /> {submitting ? "Сохранение…" : "Сохранить"}
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} disabled={submitting} className="gap-1.5">
+          <X size={16} /> Отмена
+        </Button>
       </div>
     </form>
   );
