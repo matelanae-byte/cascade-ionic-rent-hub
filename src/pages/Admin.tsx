@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { compressImageToDataUrl } from "@/lib/compressImage";
 import { Badge } from "@/components/ui/badge";
 import { ChatsTab } from "@/components/admin/ChatsTab";
 import { ReviewsTab } from "@/components/admin/ReviewsTab";
@@ -49,12 +50,27 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
   const [hidden, setHidden] = useState(initial?.hidden ?? false);
   const [image, setImage] = useState(initial?.image ?? "");
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [imageBusy, setImageBusy] = useState(false);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setImage(reader.result as string);
-    reader.readAsDataURL(file);
+    setImageBusy(true);
+    try {
+      // Карточки товара показываются ~600px шириной → 900px с запасом для retina
+      const dataUrl = await compressImageToDataUrl(file, {
+        maxWidth: 900,
+        quality: 0.78,
+        mimeType: "image/webp",
+      });
+      setImage(dataUrl);
+    } catch (err) {
+      toast.error("Не удалось обработать изображение");
+      console.error(err);
+    } finally {
+      setImageBusy(false);
+      e.target.value = "";
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -113,8 +129,9 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-foreground">Фото товара</label>
-        <Input type="file" accept="image/*" onChange={handleImageChange} />
-        {image && <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />}
+        <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageBusy} />
+        {imageBusy && <p className="text-xs text-muted-foreground">Сжимаем изображение…</p>}
+        {image && !imageBusy && <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">

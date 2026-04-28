@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/compressImage";
 
 export interface HeroTexts {
   eyebrow: string;
@@ -352,19 +353,25 @@ export const SiteSettingsProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const uploadHeroImage = async (file: File): Promise<string> => {
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${HERO_IMAGE_PATH}.${ext}`;
+    // Сжимаем до ~1200px / WebP — hero показывается не шире 448px,
+    // 1200 даёт запас для retina, но обычно <100 KB.
+    const compressed = await compressImage(file, { maxWidth: 1200, quality: 0.78, mimeType: "image/webp" });
+    const path = `${HERO_IMAGE_PATH}.webp`;
 
     await supabase.storage.from("product-images").remove([path]);
 
     const { error } = await supabase.storage
       .from("product-images")
-      .upload(path, file, { upsert: true, contentType: file.type });
+      .upload(path, compressed, {
+        upsert: true,
+        contentType: "image/webp",
+        cacheControl: "31536000", // 1 год — кешируем агрессивно
+      });
 
     if (error) throw error;
 
     const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-    const url = data.publicUrl + "?t=" + Date.now();
+    const url = data.publicUrl + "?v=" + Date.now();
 
     await upsertSetting(KEY_HERO_IMG, url);
     setSettings((prev) => ({ ...prev, heroImageUrl: url }));
