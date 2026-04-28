@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { Package, Grip, Droplets, Wrench, Brush } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteProductImage } from "@/lib/productImages";
 
 export interface Product {
   id: string;
