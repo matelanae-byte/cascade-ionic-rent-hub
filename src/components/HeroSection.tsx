@@ -58,6 +58,11 @@ const HeroSection = () => {
               <img
                 src={heroImageUrl}
                 alt="WFP оборудование для мойки фасадов"
+                width={448}
+                height={560}
+                fetchPriority="high"
+                decoding="async"
+                loading="eager"
                 className="w-full max-w-md rounded-xl object-cover aspect-[4/5] shadow-[0_20px_60px_-20px_hsl(var(--primary)/0.35)]"
               />
             ) : (
