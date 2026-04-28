@@ -30,7 +30,7 @@ interface ProductsContextType {
   products: Product[];
   visibleProducts: Product[];
   loading: boolean;
-  addProduct: (p: Omit<Product, "id" | "order">) => Promise<void>;
+  addProduct: (p: Omit<Product, "id" | "order">) => Promise<string>;
   updateProduct: (id: string, updates: Partial<Omit<Product, "id">>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   reorderProducts: (fromIndex: number, toIndex: number) => Promise<void>;
