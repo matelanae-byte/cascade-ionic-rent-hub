@@ -152,6 +152,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchProducts]);
 
   const deleteProduct = useCallback(async (id: string) => {
+    // Удаляем файл картинки из Storage (ошибки не критичны)
+    await deleteProductImage(id).catch(() => {});
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) {
       console.error("Failed to delete product:", error);
