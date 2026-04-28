@@ -257,7 +257,20 @@ const ProductsTab = () => {
         <div className="rounded-lg border bg-card p-5">
           <h3 className="font-semibold text-foreground mb-4">Новый товар</h3>
           <ProductForm
-            onSave={(data) => { addProduct(data); setAdding(false); }}
+            onSave={async (data, pendingFile) => {
+              try {
+                const newId = await addProduct(data);
+                if (pendingFile) {
+                  const url = await uploadProductImage(newId, pendingFile);
+                  await updateProduct(newId, { image: url });
+                }
+                setAdding(false);
+                toast.success("Товар добавлен");
+              } catch (err) {
+                console.error(err);
+                toast.error("Не удалось сохранить товар");
+              }
+            }}
             onCancel={() => setAdding(false)}
           />
         </div>
