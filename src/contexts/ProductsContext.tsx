@@ -128,18 +128,23 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
 
   const addProduct = useCallback(async (p: Omit<Product, "id" | "order">) => {
     const nextOrder = products.length;
-    const { error } = await supabase.from("products").insert({
-      ...productToRow(p),
-      sort_order: nextOrder,
-      category: p.category,
-      icon_name: p.iconName,
-      name: p.name,
-    });
+    const { data, error } = await supabase
+      .from("products")
+      .insert({
+        ...productToRow(p),
+        sort_order: nextOrder,
+        category: p.category,
+        icon_name: p.iconName,
+        name: p.name,
+      })
+      .select("id")
+      .single();
     if (error) {
       console.error("Failed to add product:", error);
       throw error;
     }
     await fetchProducts();
+    return data!.id as string;
   }, [products.length, fetchProducts]);
 
   const updateProduct = useCallback(async (id: string, updates: Partial<Omit<Product, "id">>) => {
