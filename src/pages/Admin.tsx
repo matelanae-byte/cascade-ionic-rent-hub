@@ -129,8 +129,9 @@ const ProductForm = ({ initial, onSave, onCancel }: ProductFormProps) => {
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium text-foreground">Фото товара</label>
-        <Input type="file" accept="image/*" onChange={handleImageChange} />
-        {image && <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />}
+        <Input type="file" accept="image/*" onChange={handleImageChange} disabled={imageBusy} />
+        {imageBusy && <p className="text-xs text-muted-foreground">Сжимаем изображение…</p>}
+        {image && !imageBusy && <img src={image} alt="preview" className="mt-2 h-24 w-auto rounded-md border object-cover" />}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
