@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { Package, Grip, Droplets, Wrench, Brush } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteProductImage } from "@/lib/productImages";
 
 export interface Product {
   id: string;
@@ -29,7 +30,7 @@ interface ProductsContextType {
   products: Product[];
   visibleProducts: Product[];
   loading: boolean;
-  addProduct: (p: Omit<Product, "id" | "order">) => Promise<void>;
+  addProduct: (p: Omit<Product, "id" | "order">) => Promise<string>;
   updateProduct: (id: string, updates: Partial<Omit<Product, "id">>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
   reorderProducts: (fromIndex: number, toIndex: number) => Promise<void>;
@@ -127,18 +128,23 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
 
   const addProduct = useCallback(async (p: Omit<Product, "id" | "order">) => {
     const nextOrder = products.length;
-    const { error } = await supabase.from("products").insert({
-      ...productToRow(p),
-      sort_order: nextOrder,
-      category: p.category,
-      icon_name: p.iconName,
-      name: p.name,
-    });
+    const { data, error } = await supabase
+      .from("products")
+      .insert({
+        ...productToRow(p),
+        sort_order: nextOrder,
+        category: p.category,
+        icon_name: p.iconName,
+        name: p.name,
+      })
+      .select("id")
+      .single();
     if (error) {
       console.error("Failed to add product:", error);
       throw error;
     }
     await fetchProducts();
+    return data!.id as string;
   }, [products.length, fetchProducts]);
 
   const updateProduct = useCallback(async (id: string, updates: Partial<Omit<Product, "id">>) => {
@@ -151,6 +157,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   }, [fetchProducts]);
 
   const deleteProduct = useCallback(async (id: string) => {
+    // Удаляем файл картинки из Storage (ошибки не критичны)
+    await deleteProductImage(id).catch(() => {});
     const { error } = await supabase.from("products").delete().eq("id", id);
     if (error) {
       console.error("Failed to delete product:", error);
